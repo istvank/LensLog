@@ -32,7 +32,7 @@ public class LensLogContract {
      */
     public static final String QUERY_PARAMETER_DISTINCT = "distinct";
 
-    interface PacksColumns {
+    public interface PacksColumns {
         String EYE = "eye";
         String LENS_TYPE = "lens_type";
         String SPHERE = "sphere";
@@ -48,12 +48,12 @@ public class LensLogContract {
         String SHOP = "shop";
     }
 
-    interface LensesColumns {
+    public interface LensesColumns {
         String PACK_ID = "pack_id";
         String TRASH = "trash";
     }
 
-    interface DaysWornColumns {
+    public interface DaysWornColumns {
         String DATETIME = "datetime";
         String WASWORN = "was_worn";
     }

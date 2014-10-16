@@ -36,6 +36,13 @@
             </intent-filter>
         </activity>
 
+        <provider
+            android:name=".provider.LensLogProvider"
+            android:authorities="eu.istvank.apps.lenslog"
+            android:syncable="false"
+            android:label="@string/app_name"
+            android:exported="false" />
+
         <receiver android:name=".receivers.NotifyAlarmReceiver"></receiver>
 
         <receiver android:name=".receivers.BootReceiver"

@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import eu.istvank.apps.lenslog.R;
+import eu.istvank.apps.lenslog.fragments.LensesFragment;
 import eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment;
 import eu.istvank.apps.lenslog.fragments.SettingsFragment;
 
@@ -72,8 +74,16 @@ public class MainActivity extends Activity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
+        Fragment fragment;
+
+        if (position == NavigationDrawerFragment.SECTION_LENSES) {
+            fragment = new LensesFragment();
+        } else {
+            fragment = PlaceholderFragment.newInstance(position + 1);
+        }
+
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment)
                 .commit();
     }
 

@@ -72,17 +72,17 @@ public class LensLogDatabase extends SQLiteOpenHelper {
                 + PacksColumns.PURCHASED_DATE + " INTEGER,"
                 + PacksColumns.NAME + " TEXT,"
                 + PacksColumns.BRAND + " TEXT,"
-                + PacksColumns.SHOP + " TEXT");
+                + PacksColumns.SHOP + " TEXT)");
 
         db.execSQL("CREATE TABLE " + Tables.LENSES + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + LensesColumns.PACK_ID + " INTEGER NOT NULL,"
-                + LensesColumns.TRASH + " INTEGER NOT NULL");
+                + LensesColumns.TRASH + " INTEGER NOT NULL)");
 
         db.execSQL("CREATE TABLE " + Tables.DAYSWORN + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + DaysWornColumns.DATETIME + " INTEGER NOT NULL,"
-                + DaysWornColumns.WASWORN + " INTEGER NOT NULL");
+                + DaysWornColumns.WASWORN + " INTEGER NOT NULL)");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -19,6 +19,7 @@
 
     <string name="app_name">LensLog</string>
     <string name="title_section_calendar">Calendar</string>
+    <string name="title_section_lenses">Lenses</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
@@ -26,5 +27,6 @@
     <string name="pref_notify_summ">Do you want this app to ask you every day?</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="notification_question">Do you wear your lenses today?</string>
+    <string name="action_new_lens">Add new lens</string>
 
 </resources>
