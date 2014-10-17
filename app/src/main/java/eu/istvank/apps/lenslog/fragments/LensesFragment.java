@@ -98,7 +98,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        getActivity().getMenuInflater().inflate(R.menu.newlens, menu);
+        getActivity().getMenuInflater().inflate(R.menu.lenses, menu);
     }
 
     @Override
