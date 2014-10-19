@@ -1,16 +1,21 @@
 package eu.istvank.apps.lenslog.fragments;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import eu.istvank.apps.lenslog.R;
+import eu.istvank.apps.lenslog.provider.LensLogContract;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,6 +73,10 @@ public class NewLensFragment extends Fragment {
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
+        ActionBar actionBar = getActivity().getActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(R.string.title_fragment_newlens);
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_new_lens, container, false);
     }
@@ -85,10 +94,29 @@ public class NewLensFragment extends Fragment {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_save) {
+            // add new lens to database
+            EditText edtLensName = (EditText) getActivity().findViewById(R.id.newlens_edt_name);
+            ContentValues values = new ContentValues();
+            values.put(LensLogContract.PacksColumns.EYE, "left");
+            values.put(LensLogContract.PacksColumns.LENS_TYPE, "great");
+            values.put(LensLogContract.PacksColumns.NAME, edtLensName.getText().toString());
+            getActivity().getContentResolver().insert(LensLogContract.Packs.CONTENT_URI, values);
+
+            getFragmentManager().beginTransaction()
+                            .remove(this)
+                            .commit();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            //mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");

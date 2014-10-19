@@ -29,5 +29,6 @@
     <string name="notification_question">Do you wear your lenses today?</string>
     <string name="action_new_lens">Add new lens</string>
     <string name="action_save">Save</string>
+    <string name="title_fragment_newlens">Add new lens</string>
 
 </resources>

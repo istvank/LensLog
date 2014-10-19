@@ -9,6 +9,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -20,7 +21,9 @@ import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.provider.LensLogContract;
 
 /**
- * A fragment representing a list of Items.
+ * The LensesFragment shows a list of lens packs. It shows an "add" button to allow adding more
+ * lens packs.
+ *
  * <p />
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
@@ -73,10 +76,10 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Uri lenses = LensLogContract.Lenses.CONTENT_URI;
+        Uri lenses = LensLogContract.Packs.CONTENT_URI;
         Cursor c = getActivity().getContentResolver().query(lenses, null, null, null, null);
 
-        mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, c, new String[] {LensLogContract.LensesColumns.PACK_ID}, new int[] {android.R.id.text1});
+        mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, c, new String[] {LensLogContract.PacksColumns.NAME}, new int[] {android.R.id.text1});
     }
 
     @Override
@@ -93,12 +96,26 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
 
         setHasOptionsMenu(true);
 
+        getActivity().setTitle(R.string.title_section_lenses);
+
         return view;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.lenses, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_newlens) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, NewLensFragment.newInstance("", ""), "newlens")
+                    .addToBackStack("newlens")
+                    .commit();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

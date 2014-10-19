@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import eu.istvank.apps.lenslog.R;
+import eu.istvank.apps.lenslog.fragments.CalendarFragment;
 import eu.istvank.apps.lenslog.fragments.LensesFragment;
 import eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment;
 import eu.istvank.apps.lenslog.fragments.SettingsFragment;
@@ -79,20 +80,12 @@ public class MainActivity extends Activity
         if (position == NavigationDrawerFragment.SECTION_LENSES) {
             fragment = new LensesFragment();
         } else {
-            fragment = PlaceholderFragment.newInstance(position + 1);
+            fragment = new CalendarFragment();
         }
 
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
-    }
-
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section_calendar);
-                break;
-        }
     }
 
     /**
@@ -133,46 +126,6 @@ public class MainActivity extends Activity
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
     }
 
 }
