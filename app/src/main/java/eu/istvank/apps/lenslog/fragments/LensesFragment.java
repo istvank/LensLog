@@ -28,7 +28,7 @@ import eu.istvank.apps.lenslog.provider.LensLogContract;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p />
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link LensesFragmentCallbacks}
  * interface.
  */
 public class LensesFragment extends Fragment implements AbsListView.OnItemClickListener {
@@ -42,7 +42,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private LensesFragmentCallbacks mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -168,9 +168,9 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     * "http://developer.android.com/training/basics/fragments/communicating.html"
     * >Communicating with Other Fragments</a> for more information.
     */
-    public interface OnFragmentInteractionListener {
+    public interface LensesFragmentCallbacks {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        public void onLensPackSelected(String id);
     }
 
 }
