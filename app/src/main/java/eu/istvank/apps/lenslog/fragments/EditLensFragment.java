@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentValues;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import eu.istvank.apps.lenslog.R;
@@ -20,21 +22,18 @@ import eu.istvank.apps.lenslog.provider.LensLogContract;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NewLensFragment.OnFragmentInteractionListener} interface
+ * {@link EditLensFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link NewLensFragment#newInstance} factory method to
+ * Use the {@link EditLensFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
  */
-public class NewLensFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class EditLensFragment extends Fragment {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // the fragment initialization parameters
+    private static final String ARG_LENSURI = "lensUri";
+
+    private Uri mLensUri;
 
     private OnFragmentInteractionListener mListener;
 
@@ -42,14 +41,17 @@ public class NewLensFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment NewLensFragment.
+     * @return A new instance of fragment EditLensFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NewLensFragment newInstance() {
-        NewLensFragment fragment = new NewLensFragment();
+    public static EditLensFragment newInstance(Uri lensUri) {
+        EditLensFragment fragment = new EditLensFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_LENSURI, lensUri);
+        fragment.setArguments(args);
         return fragment;
     }
-    public NewLensFragment() {
+    public EditLensFragment() {
         // Required empty public constructor
     }
 
@@ -57,8 +59,7 @@ public class NewLensFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mLensUri = getArguments().getParcelable(ARG_LENSURI);
         }
     }
 
@@ -90,17 +91,27 @@ public class NewLensFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_save) {
-            // add new lens to database
-            EditText edtLensName = (EditText) getActivity().findViewById(R.id.newlens_edt_name);
-            ContentValues values = new ContentValues();
-            values.put(LensLogContract.PacksColumns.EYE, "left");
-            values.put(LensLogContract.PacksColumns.LENS_TYPE, "great");
-            values.put(LensLogContract.PacksColumns.NAME, edtLensName.getText().toString());
-            getActivity().getContentResolver().insert(LensLogContract.Packs.CONTENT_URI, values);
+            if (mLensUri != null) {
+                // change existing lens pack
+            } else {
+                // add new lens to database
+                EditText edtLensName = (EditText) getActivity().findViewById(R.id.newlens_edt_name);
+                ContentValues values = new ContentValues();
+                values.put(LensLogContract.PacksColumns.EYE, "left");
+                values.put(LensLogContract.PacksColumns.LENS_TYPE, "great");
+                values.put(LensLogContract.PacksColumns.NAME, edtLensName.getText().toString());
+                getActivity().getContentResolver().insert(LensLogContract.Packs.CONTENT_URI, values);
+            }
 
-            getFragmentManager().beginTransaction()
-                            .remove(this)
-                            .commit();
+            // close this fragment and return to previous
+            getFragmentManager().popBackStack();
+
+            // close the keyboard
+            InputMethodManager inputManager = (InputMethodManager)
+                    getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
         }
 
         return super.onOptionsItemSelected(item);

@@ -22,22 +22,18 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.fragments.CalendarFragment;
 import eu.istvank.apps.lenslog.fragments.LensesFragment;
 import eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment;
-import eu.istvank.apps.lenslog.fragments.NewLensFragment;
+import eu.istvank.apps.lenslog.fragments.EditLensFragment;
 import eu.istvank.apps.lenslog.fragments.SettingsFragment;
 
 
@@ -125,13 +121,15 @@ public class MainActivity extends Activity
             // Display the fragment in the main container.
             getFragmentManager().beginTransaction()
                     .replace(R.id.container, new SettingsFragment())
+                    .addToBackStack(null)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit();
             return true;
         } else if (id == R.id.action_newlens) {
             getFragmentManager().beginTransaction()
-                    .replace(R.id.container, NewLensFragment.newInstance())
+                    .replace(R.id.container, EditLensFragment.newInstance(null))
                     .addToBackStack(null)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit();
         }
         return super.onOptionsItemSelected(item);
@@ -142,8 +140,13 @@ public class MainActivity extends Activity
      */
 
     @Override
-    public void onPackSelected(Uri packid) {
+    public void onPackSelected(Uri packUri) {
         //TODO: show PackDetailsFragment
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, EditLensFragment.newInstance(packUri))
+                .addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
     }
 
 }

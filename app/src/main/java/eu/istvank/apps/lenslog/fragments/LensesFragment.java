@@ -2,7 +2,10 @@ package eu.istvank.apps.lenslog.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.ContentUris;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,17 +35,11 @@ import eu.istvank.apps.lenslog.provider.LensLogContract;
  * Activities containing this fragment MUST implement the {@link eu.istvank.apps.lenslog.fragments.LensesFragment.OnPackSelectedListener}
  * interface.
  */
-public class LensesFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class LensesFragment extends Fragment implements AbsListView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    /**
+     * The listener for pack selection events.
+     */
     private OnPackSelectedListener mListener;
 
     /**
@@ -51,10 +48,15 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     private AbsListView mListView;
 
     /**
+     * Identifies a particular Loader being used in this component
+     */
+    private static final int URL_LOADER = 0;
+
+    /**
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ListAdapter mAdapter;
+    private SimpleCursorAdapter mAdapter;
 
     // TODO: Rename and change types of parameters
     public static LensesFragment newInstance() {
@@ -72,11 +74,6 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Uri lenses = LensLogContract.Packs.CONTENT_URI;
-        Cursor c = getActivity().getContentResolver().query(lenses, null, null, null, null);
-
-        mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, c, new String[] {LensLogContract.PacksColumns.NAME}, new int[] {android.R.id.text1});
     }
 
     @Override
@@ -86,10 +83,27 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
+
+        mAdapter =
+                new SimpleCursorAdapter(
+                        getActivity(),                          // Current context
+                        android.R.layout.simple_list_item_1,    // Layout for a single row
+                        null,                                   // No Cursor yet
+                        new String[] {LensLogContract.PacksColumns.NAME},   // Cursor columns to use
+                        new int[] {android.R.id.text1},         // Layout fields to use
+                        0                                       // No flags
+                );
+
         ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
+
+        /*
+         * Initializes the CursorLoader. The URL_LOADER value is eventually passed
+         * to onCreateLoader().
+         */
+        getLoaderManager().initLoader(URL_LOADER, null, this);
 
         setHasOptionsMenu(true);
 
@@ -113,7 +127,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
             mListener = (OnPackSelectedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                + " must implement OnFragmentInteractionListener");
+                + " must implement OnPackSelectedListener");
         }
     }
 
@@ -152,7 +166,47 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     * activity.
     */
     public interface OnPackSelectedListener {
-        public void onPackSelected(Uri packid);
+        public void onPackSelected(Uri packUri);
     }
 
+    /**
+     * Interfaces
+     */
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        /*
+        * Takes action based on the ID of the Loader that's being created
+        */
+        switch (id) {
+            case URL_LOADER:
+                // Returns a new CursorLoader
+                String[] projection = new String[] {
+                        LensLogContract.Packs._ID,
+                        LensLogContract.Packs.NAME
+                };
+                return new CursorLoader(
+                        getActivity(),  // Parent activity context
+                        LensLogContract.Packs.CONTENT_URI,        // Table to query
+                        projection,     // Projection to return
+                        null,           // No selection clause
+                        null,           // No selection arguments
+                        null            // Default sort order
+                );
+            default:
+                // An invalid id was passed in
+                return null;
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAdapter.changeCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // Sets the Adapter's backing data to null. This prevents memory leaks.
+        mAdapter.changeCursor(null);
+    }
 }
