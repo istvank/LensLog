@@ -2,6 +2,7 @@ package eu.istvank.apps.lenslog.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,7 +29,7 @@ import eu.istvank.apps.lenslog.provider.LensLogContract;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p />
- * Activities containing this fragment MUST implement the {@link LensesFragmentCallbacks}
+ * Activities containing this fragment MUST implement the {@link eu.istvank.apps.lenslog.fragments.LensesFragment.OnPackSelectedListener}
  * interface.
  */
 public class LensesFragment extends Fragment implements AbsListView.OnItemClickListener {
@@ -42,7 +43,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     private String mParam1;
     private String mParam2;
 
-    private LensesFragmentCallbacks mListener;
+    private OnPackSelectedListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -56,12 +57,8 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     private ListAdapter mAdapter;
 
     // TODO: Rename and change types of parameters
-    public static LensesFragment newInstance(String param1, String param2) {
+    public static LensesFragment newInstance() {
         LensesFragment fragment = new LensesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -96,8 +93,6 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
 
         setHasOptionsMenu(true);
 
-        getActivity().setTitle(R.string.title_section_lenses);
-
         return view;
     }
 
@@ -108,13 +103,6 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_newlens) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, NewLensFragment.newInstance("", ""), "newlens")
-                    .addToBackStack("newlens")
-                    .commit();
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -122,7 +110,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            //mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnPackSelectedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                 + " must implement OnFragmentInteractionListener");
@@ -139,9 +127,8 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-            //mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            Uri packUri = ContentUris.withAppendedId(LensLogContract.Packs.CONTENT_URI, id);
+            mListener.onPackSelected(packUri);
         }
     }
 
@@ -163,14 +150,9 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     * fragment to allow an interaction in this fragment to be communicated
     * to the activity and potentially other fragments contained in that
     * activity.
-    * <p>
-    * See the Android Training lesson <a href=
-    * "http://developer.android.com/training/basics/fragments/communicating.html"
-    * >Communicating with Other Fragments</a> for more information.
     */
-    public interface LensesFragmentCallbacks {
-        // TODO: Update argument type and name
-        public void onLensPackSelected(String id);
+    public interface OnPackSelectedListener {
+        public void onPackSelected(Uri packid);
     }
 
 }

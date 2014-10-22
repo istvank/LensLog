@@ -21,7 +21,9 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -35,11 +37,12 @@ import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.fragments.CalendarFragment;
 import eu.istvank.apps.lenslog.fragments.LensesFragment;
 import eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment;
+import eu.istvank.apps.lenslog.fragments.NewLensFragment;
 import eu.istvank.apps.lenslog.fragments.SettingsFragment;
 
 
 public class MainActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LensesFragment.OnPackSelectedListener {
 
     public static final String TAG = "MainActivity";
 
@@ -78,9 +81,9 @@ public class MainActivity extends Activity
         Fragment fragment;
 
         if (position == NavigationDrawerFragment.SECTION_LENSES) {
-            fragment = new LensesFragment();
+            fragment = LensesFragment.newInstance();
         } else {
-            fragment = new CalendarFragment();
+            fragment = CalendarFragment.newInstance();
         }
 
         fragmentManager.beginTransaction()
@@ -124,8 +127,23 @@ public class MainActivity extends Activity
                     .replace(R.id.container, new SettingsFragment())
                     .commit();
             return true;
+        } else if (id == R.id.action_newlens) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, NewLensFragment.newInstance())
+                    .addToBackStack(null)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Interfaces
+     */
+
+    @Override
+    public void onPackSelected(Uri packid) {
+        //TODO: show PackDetailsFragment
     }
 
 }
