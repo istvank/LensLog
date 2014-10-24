@@ -31,4 +31,18 @@
     <string name="action_save">Save</string>
     <string name="title_fragment_newlens">Add new lens</string>
 
+    <!-- NewLensFragment -->
+    <string name="label_name">Name</string>
+    <string name="label_brand">Brand</string>
+    <string name="label_eye">Eye</string>
+    <string name="label_sphere">Sphere</string>
+    <string name="label_base_curve">Base Curve</string>
+    <string name="label_diameter">Diameter</string>
+    <string name="label_cylinder">Cylinder</string>
+    <string name="label_axis">Axis</string>
+    <string name="label_add">Add Power</string>
+    <string name="label_expiration">Expiration date</string>
+    <string name="label_purchased">Purchase date</string>
+    <string name="label_shop">Shop name</string>
+
 </resources>

@@ -25,9 +25,6 @@ import eu.istvank.apps.lenslog.provider.LensLogContract;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link EditLensFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link EditLensFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
@@ -39,10 +36,19 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
 
     private Uri mLensUri;
 
-    private OnFragmentInteractionListener mListener;
-
     // views
-    private EditText mEdtLensName;
+    private EditText mEdtName;
+    private EditText mEdtBrand;
+    private EditText mEdtEye;
+    private EditText mEdtSphere;
+    private EditText mEdtBaseCurve;
+    private EditText mEdtDiameter;
+    private EditText mEdtCylinder;
+    private EditText mEdtAxis;
+    private EditText mEdtAdd;
+    private EditText mEdtExpiration;
+    private EditText mEdtPurchased;
+    private EditText mEdtShop;
 
     /**
      * Identifies a particular Loader being used in this component
@@ -85,10 +91,21 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         actionBar.setTitle(R.string.title_fragment_newlens);
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_new_lens, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit_lens, container, false);
 
         // link views
-        mEdtLensName = (EditText) view.findViewById(R.id.newlens_edt_name);
+        mEdtName = (EditText) view.findViewById(R.id.newlens_edt_name);
+        mEdtBrand = (EditText) view.findViewById(R.id.newlens_edt_brand);
+        mEdtEye = (EditText) view.findViewById(R.id.newlens_edt_eye);
+        mEdtSphere = (EditText) view.findViewById(R.id.newlens_edt_sphere);
+        mEdtBaseCurve = (EditText) view.findViewById(R.id.newlens_edt_base_curve);
+        mEdtDiameter = (EditText) view.findViewById(R.id.newlens_edt_diameter);
+        mEdtCylinder = (EditText) view.findViewById(R.id.newlens_edt_cylinder);
+        mEdtAxis = (EditText) view.findViewById(R.id.newlens_edt_axis);
+        mEdtAdd = (EditText) view.findViewById(R.id.newlens_edt_add);
+        mEdtExpiration = (EditText) view.findViewById(R.id.newlens_edt_expiration);
+        mEdtPurchased = (EditText) view.findViewById(R.id.newlens_edt_purchased);
+        mEdtShop = (EditText) view.findViewById(R.id.newlens_edt_shop);
 
         // check if a new item is created or an old edited
         if (mLensUri != null) {
@@ -102,13 +119,6 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.newlens, menu);
@@ -118,9 +128,18 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_save) {
             ContentValues values = new ContentValues();
-            values.put(LensLogContract.PacksColumns.EYE, "left");
-            values.put(LensLogContract.PacksColumns.LENS_TYPE, "great");
-            values.put(LensLogContract.PacksColumns.NAME, mEdtLensName.getText().toString());
+            values.put(LensLogContract.PacksColumns.NAME, mEdtName.getText().toString());
+            values.put(LensLogContract.PacksColumns.BRAND, mEdtBrand.getText().toString());
+            values.put(LensLogContract.PacksColumns.EYE, mEdtEye.getText().toString());
+            values.put(LensLogContract.PacksColumns.SPHERE, mEdtSphere.getText().toString());
+            values.put(LensLogContract.PacksColumns.BASE_CURVE, mEdtBaseCurve.getText().toString());
+            values.put(LensLogContract.PacksColumns.DIAMETER, mEdtDiameter.getText().toString());
+            values.put(LensLogContract.PacksColumns.CYLINDER, mEdtCylinder.getText().toString());
+            values.put(LensLogContract.PacksColumns.AXIS, mEdtAxis.getText().toString());
+            values.put(LensLogContract.PacksColumns.ADD_POWER, mEdtAdd.getText().toString());
+            values.put(LensLogContract.PacksColumns.EXPIRATION_DATE, mEdtExpiration.getText().toString());
+            values.put(LensLogContract.PacksColumns.PURCHASED_DATE, mEdtPurchased.getText().toString());
+            values.put(LensLogContract.PacksColumns.SHOP, mEdtShop.getText().toString());
 
             if (mLensUri != null) {
                 // change existing lens pack
@@ -133,10 +152,9 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             // close this fragment and return to previous
             getFragmentManager().popBackStack();
 
-            // close the keyboard
+            // keyboard stays open after fragment is removed, so close it
             InputMethodManager inputManager = (InputMethodManager)
                     getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-
             inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
                     InputMethodManager.HIDE_NOT_ALWAYS);
         }
@@ -158,22 +176,6 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
     }
 
     /**
@@ -190,7 +192,18 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                 // Returns a new CursorLoader
                 String[] projection = new String[] {
                         LensLogContract.Packs._ID,
-                        LensLogContract.Packs.NAME
+                        LensLogContract.Packs.NAME,
+                        LensLogContract.Packs.BRAND,
+                        LensLogContract.Packs.EYE,
+                        LensLogContract.Packs.SPHERE,
+                        LensLogContract.Packs.BASE_CURVE,
+                        LensLogContract.Packs.DIAMETER,
+                        LensLogContract.Packs.CYLINDER,
+                        LensLogContract.Packs.AXIS,
+                        LensLogContract.Packs.ADD_POWER,
+                        LensLogContract.Packs.EXPIRATION_DATE,
+                        LensLogContract.Packs.PURCHASED_DATE,
+                        LensLogContract.Packs.SHOP
                 };
                 return new CursorLoader(
                         getActivity(),  // Parent activity context
@@ -209,7 +222,18 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         data.moveToFirst();
-        mEdtLensName.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.NAME)));
+        mEdtName.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.NAME)));
+        mEdtBrand.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.BRAND)));
+        mEdtEye.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.EYE)));
+        mEdtSphere.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.SPHERE)));
+        mEdtBaseCurve.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.BASE_CURVE)));
+        mEdtDiameter.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.DIAMETER)));
+        mEdtCylinder.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.CYLINDER)));
+        mEdtAxis.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.AXIS)));
+        mEdtAdd.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.ADD_POWER)));
+        mEdtExpiration.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.EXPIRATION_DATE)));
+        mEdtPurchased.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.PURCHASED_DATE)));
+        mEdtShop.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.SHOP)));
     }
 
     @Override
