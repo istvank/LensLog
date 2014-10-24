@@ -38,6 +38,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import eu.istvank.apps.lenslog.R;
+import eu.istvank.apps.lenslog.activities.MainActivity;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -255,6 +256,13 @@ public class NavigationDrawerFragment extends Fragment {
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
             inflater.inflate(R.menu.global, menu);
+
+            // do not show Settings item if showing Settings fragment
+            Fragment frgSettings = getFragmentManager().findFragmentByTag(MainActivity.FRAGMENT_SETTINGS);
+            if (frgSettings != null && frgSettings.isVisible()) {
+                menu.removeItem(R.id.action_settings);
+            }
+
             showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);

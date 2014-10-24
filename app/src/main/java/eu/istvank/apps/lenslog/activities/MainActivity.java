@@ -42,6 +42,9 @@ public class MainActivity extends Activity
 
     public static final String TAG = "MainActivity";
 
+    // Fragment Tags
+    public static final String FRAGMENT_SETTINGS = "Settings";
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -105,6 +108,13 @@ public class MainActivity extends Activity
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.global, menu);
+
+            // do not show Settings item if showing Settings fragment
+            Fragment frgSettings = getFragmentManager().findFragmentByTag(FRAGMENT_SETTINGS);
+            if (frgSettings != null && frgSettings.isVisible()) {
+                menu.removeItem(R.id.action_settings);
+            }
+
             restoreActionBar();
             return true;
         }
@@ -120,7 +130,7 @@ public class MainActivity extends Activity
         if (id == R.id.action_settings) {
             // Display the fragment in the main container.
             getFragmentManager().beginTransaction()
-                    .replace(R.id.container, new SettingsFragment())
+                    .replace(R.id.container, new SettingsFragment(), FRAGMENT_SETTINGS)
                     .addToBackStack(null)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit();

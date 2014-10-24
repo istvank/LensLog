@@ -50,6 +50,16 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // has to be returned otherwise the onCreateOptionsMenu from the host Activity
+        // is not called when coming from other Fragments that do not explicitly call
+        // setHasOptionsMenu(true).
+        setHasOptionsMenu(true);
+
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getPreferenceScreen().getSharedPreferences()
