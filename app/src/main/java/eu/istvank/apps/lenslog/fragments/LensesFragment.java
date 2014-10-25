@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -83,6 +84,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
+        registerForContextMenu(mListView);
 
         mAdapter =
                 new SimpleCursorAdapter(
@@ -118,6 +120,29 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (v.getId() == android.R.id.list) {
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.lenseslist, menu);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch(item.getItemId()) {
+            case R.id.delete:
+                // remove lens pack
+                Uri packUri = ContentUris.withAppendedId(LensLogContract.Packs.CONTENT_URI, info.id);
+                getActivity().getContentResolver().delete(packUri, null, null);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
     @Override
