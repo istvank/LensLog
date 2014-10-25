@@ -2,6 +2,7 @@ package eu.istvank.apps.lenslog.fragments;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.ContentValues;
@@ -11,6 +12,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,8 +21,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.provider.LensLogContract;
@@ -51,6 +59,24 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     private EditText mEdtExpiration;
     private EditText mEdtPurchased;
     private EditText mEdtShop;
+
+    /**
+     * The calendar for the calendar picker
+     */
+    Calendar mCalendar = Calendar.getInstance();
+
+    private enum DateField {
+        EXPIRATION,
+        PURCHASED
+    }
+
+    private DateField mCurrentDateField;
+
+    private long mExpirationDate;
+    private long mPurchasedDate;
+
+    private static final int mDateBitmask = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR;
+
 
     // according to internet research, having the same prescription on both eyes is less likely than
     // having different ones. That's why the "both" value is the last item.
@@ -119,7 +145,27 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         mEdtAxis = (EditText) view.findViewById(R.id.newlens_edt_axis);
         mEdtAdd = (EditText) view.findViewById(R.id.newlens_edt_add);
         mEdtExpiration = (EditText) view.findViewById(R.id.newlens_edt_expiration);
+        mEdtExpiration.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentDateField = DateField.EXPIRATION;
+                mCalendar.setTimeInMillis(mExpirationDate);
+                new DatePickerDialog(getActivity(), mDatePicker, mCalendar
+                        .get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
+                        mCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
         mEdtPurchased = (EditText) view.findViewById(R.id.newlens_edt_purchased);
+        mEdtPurchased.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentDateField = DateField.PURCHASED;
+                mCalendar.setTimeInMillis(mPurchasedDate);
+                new DatePickerDialog(getActivity(), mDatePicker, mCalendar
+                        .get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
+                        mCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
         mEdtShop = (EditText) view.findViewById(R.id.newlens_edt_shop);
 
         // check if a new item is created or an old edited
@@ -165,8 +211,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             values.put(LensLogContract.PacksColumns.CYLINDER, mEdtCylinder.getText().toString());
             values.put(LensLogContract.PacksColumns.AXIS, mEdtAxis.getText().toString());
             values.put(LensLogContract.PacksColumns.ADD_POWER, mEdtAdd.getText().toString());
-            values.put(LensLogContract.PacksColumns.EXPIRATION_DATE, mEdtExpiration.getText().toString());
-            values.put(LensLogContract.PacksColumns.PURCHASED_DATE, mEdtPurchased.getText().toString());
+            values.put(LensLogContract.PacksColumns.EXPIRATION_DATE, mExpirationDate);
+            values.put(LensLogContract.PacksColumns.PURCHASED_DATE, mPurchasedDate);
             values.put(LensLogContract.PacksColumns.SHOP, mEdtShop.getText().toString());
 
             if (mLensUri != null) {
@@ -204,6 +250,32 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    /**
+     * DatePickerDialog
+     */
+
+    DatePickerDialog.OnDateSetListener mDatePicker = new DatePickerDialog.OnDateSetListener() {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            mCalendar.set(Calendar.YEAR, year);
+            mCalendar.set(Calendar.MONTH, monthOfYear);
+            mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            updateDateField();
+        }
+
+    };
+
+    private void updateDateField() {
+        if (mCurrentDateField.equals(DateField.EXPIRATION)) {
+            mExpirationDate = mCalendar.getTimeInMillis();
+            mEdtExpiration.setText(DateUtils.formatDateTime(getActivity(), mExpirationDate, mDateBitmask));
+        } else {
+            mPurchasedDate = mCalendar.getTimeInMillis();
+            mEdtPurchased.setText(DateUtils.formatDateTime(getActivity(), mPurchasedDate, mDateBitmask));
+        }
     }
 
     /**
@@ -266,8 +338,12 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         mEdtCylinder.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.CYLINDER)));
         mEdtAxis.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.AXIS)));
         mEdtAdd.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.ADD_POWER)));
-        mEdtExpiration.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.EXPIRATION_DATE)));
-        mEdtPurchased.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.PURCHASED_DATE)));
+        // get formatted expiration date
+        mExpirationDate = data.getLong(data.getColumnIndexOrThrow(LensLogContract.Packs.EXPIRATION_DATE));
+        mEdtExpiration.setText(DateUtils.formatDateTime(getActivity(), mExpirationDate, mDateBitmask));
+        // get formatted purchased date
+        mPurchasedDate = data.getLong(data.getColumnIndexOrThrow(LensLogContract.Packs.PURCHASED_DATE));
+        mEdtPurchased.setText(DateUtils.formatDateTime(getActivity(), mPurchasedDate, mDateBitmask));
         mEdtShop.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.SHOP)));
     }
 

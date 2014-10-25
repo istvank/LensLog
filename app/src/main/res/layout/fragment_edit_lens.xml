@@ -122,7 +122,8 @@
             android:layout_height="wrap_content"
             android:inputType="date"
             android:id="@+id/newlens_edt_expiration"
-            android:layout_gravity="left" />
+            android:layout_gravity="left"
+            android:focusable="false" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -134,7 +135,8 @@
             android:layout_height="wrap_content"
             android:inputType="date"
             android:id="@+id/newlens_edt_purchased"
-            android:layout_gravity="left" />
+            android:layout_gravity="left"
+            android:focusable="false" />
 
         <TextView
             android:layout_width="wrap_content"
