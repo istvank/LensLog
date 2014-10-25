@@ -38,11 +38,11 @@
             android:layout_height="wrap_content"
             android:text="@string/label_eye" />
 
-        <EditText
+        <Spinner
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:id="@+id/newlens_edt_eye"
-            android:layout_gravity="left" />
+            android:id="@+id/newlens_spn_eye"
+            android:layout_gravity="left"/>
 
         <TextView
             android:layout_width="wrap_content"

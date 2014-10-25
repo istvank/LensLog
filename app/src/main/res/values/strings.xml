@@ -35,6 +35,11 @@
     <string name="label_name">Name</string>
     <string name="label_brand">Brand</string>
     <string name="label_eye">Eye</string>
+    <string-array name="eye_array">
+        <item>Left</item>
+        <item>Right</item>
+        <item>Both</item>
+    </string-array>
     <string name="label_sphere">Sphere</string>
     <string name="label_base_curve">Base Curve</string>
     <string name="label_diameter">Diameter</string>

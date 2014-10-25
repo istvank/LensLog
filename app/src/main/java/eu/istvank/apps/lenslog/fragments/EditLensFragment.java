@@ -18,7 +18,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.provider.LensLogContract;
@@ -39,7 +41,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     // views
     private EditText mEdtName;
     private EditText mEdtBrand;
-    private EditText mEdtEye;
+    private Spinner mSpnEye;
     private EditText mEdtSphere;
     private EditText mEdtBaseCurve;
     private EditText mEdtDiameter;
@@ -49,6 +51,12 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     private EditText mEdtExpiration;
     private EditText mEdtPurchased;
     private EditText mEdtShop;
+
+    // according to internet research, having the same prescription on both eyes is less likely than
+    // having different ones. That's why the "both" value is the last item.
+    public static final int EYE_LEFT = 0;
+    public static final int EYE_RIGHT = 1;
+    public static final int EYE_BOTH = 2;
 
     /**
      * Identifies a particular Loader being used in this component
@@ -96,7 +104,14 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         // link views
         mEdtName = (EditText) view.findViewById(R.id.newlens_edt_name);
         mEdtBrand = (EditText) view.findViewById(R.id.newlens_edt_brand);
-        mEdtEye = (EditText) view.findViewById(R.id.newlens_edt_eye);
+        mSpnEye = (Spinner) view.findViewById(R.id.newlens_spn_eye);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.eye_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mSpnEye.setAdapter(adapter);
         mEdtSphere = (EditText) view.findViewById(R.id.newlens_edt_sphere);
         mEdtBaseCurve = (EditText) view.findViewById(R.id.newlens_edt_base_curve);
         mEdtDiameter = (EditText) view.findViewById(R.id.newlens_edt_diameter);
@@ -130,7 +145,20 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             ContentValues values = new ContentValues();
             values.put(LensLogContract.PacksColumns.NAME, mEdtName.getText().toString());
             values.put(LensLogContract.PacksColumns.BRAND, mEdtBrand.getText().toString());
-            values.put(LensLogContract.PacksColumns.EYE, mEdtEye.getText().toString());
+            int eyePos = mSpnEye.getSelectedItemPosition();
+            String eye;
+            switch (eyePos) {
+                case EYE_LEFT:
+                    eye = "left";
+                    break;
+                case EYE_RIGHT:
+                    eye = "right";
+                    break;
+                default:
+                    eye = "both";
+            }
+            values.put(LensLogContract.PacksColumns.EYE, eye);
+            values.put(LensLogContract.PacksColumns.LENS_TYPE, "");
             values.put(LensLogContract.PacksColumns.SPHERE, mEdtSphere.getText().toString());
             values.put(LensLogContract.PacksColumns.BASE_CURVE, mEdtBaseCurve.getText().toString());
             values.put(LensLogContract.PacksColumns.DIAMETER, mEdtDiameter.getText().toString());
@@ -207,7 +235,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                 };
                 return new CursorLoader(
                         getActivity(),  // Parent activity context
-                        mLensUri,        // Table to query
+                        mLensUri,       // Table to query
                         projection,     // Projection to return
                         null,           // No selection clause
                         null,           // No selection arguments
@@ -224,7 +252,14 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         data.moveToFirst();
         mEdtName.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.NAME)));
         mEdtBrand.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.BRAND)));
-        mEdtEye.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.EYE)));
+        int eyeSelection = EYE_LEFT;
+        String eye = data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.EYE));
+        if (eye.equals("right")) {
+            eyeSelection = EYE_RIGHT;
+        } else if (eye.equals("both")) {
+            eyeSelection = EYE_BOTH;
+        }
+        mSpnEye.setSelection(eyeSelection);
         mEdtSphere.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.SPHERE)));
         mEdtBaseCurve.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.BASE_CURVE)));
         mEdtDiameter.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.DIAMETER)));
