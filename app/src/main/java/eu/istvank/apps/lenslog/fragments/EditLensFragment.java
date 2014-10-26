@@ -117,7 +117,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
-        //TODO: is this handled at all?
+        //TODO: does this work at all?
         ActionBar actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(R.string.title_fragment_newlens);

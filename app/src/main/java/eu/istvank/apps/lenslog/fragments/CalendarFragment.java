@@ -4,9 +4,15 @@ package eu.istvank.apps.lenslog.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.roomorama.caldroid.CaldroidFragment;
+
+import java.util.Calendar;
 
 import eu.istvank.apps.lenslog.R;
 
@@ -54,10 +60,22 @@ public class CalendarFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getActivity().setTitle(R.string.title_section_calendar);
-
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calendar, container, false);
+        View view = inflater.inflate(R.layout.fragment_calendar, container, false);
+
+        CaldroidFragment caldroidFragment = new CaldroidFragment();
+        Bundle args = new Bundle();
+        Calendar cal = Calendar.getInstance();
+        args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
+        args.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
+        args.putBoolean(CaldroidFragment.ENABLE_CLICK_ON_DISABLED_DATES, false);
+        caldroidFragment.setArguments(args);
+
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.calendar_container, caldroidFragment)
+                .commit();
+
+        return view;
     }
 
 

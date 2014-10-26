@@ -22,22 +22,17 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.widget.DrawerLayout;
-
-import com.roomorama.caldroid.CaldroidFragment;
-
-import java.util.Calendar;
 
 import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.fragments.CalendarFragment;
+import eu.istvank.apps.lenslog.fragments.EditLensFragment;
 import eu.istvank.apps.lenslog.fragments.LensesFragment;
 import eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment;
-import eu.istvank.apps.lenslog.fragments.EditLensFragment;
-import eu.istvank.apps.lenslog.fragments.SettingsFragment;
 
 
 public class MainActivity extends ActionBarActivity
@@ -85,18 +80,6 @@ public class MainActivity extends ActionBarActivity
         if (position == NavigationDrawerFragment.SECTION_LENSES) {
             fragment = LensesFragment.newInstance();
         } else {
-
-            CaldroidFragment caldroidFragment = new CaldroidFragment();
-            Bundle args = new Bundle();
-            Calendar cal = Calendar.getInstance();
-            args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
-            args.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
-            caldroidFragment.setArguments(args);
-
-            //fragmentManager.beginTransaction()
-            //        .replace(R.id.container, caldroidFragment)
-            //        .commit();
-
             fragment = CalendarFragment.newInstance();
         }
 
