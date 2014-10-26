@@ -16,18 +16,21 @@
 
 package eu.istvank.apps.lenslog.activities;
 
-import android.app.Activity;
-
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+
+import com.roomorama.caldroid.CaldroidFragment;
+
+import java.util.Calendar;
 
 import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.fragments.CalendarFragment;
@@ -37,7 +40,7 @@ import eu.istvank.apps.lenslog.fragments.EditLensFragment;
 import eu.istvank.apps.lenslog.fragments.SettingsFragment;
 
 
-public class MainActivity extends Activity
+public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, LensesFragment.OnPackSelectedListener {
 
     public static final String TAG = "MainActivity";
@@ -64,7 +67,7 @@ public class MainActivity extends Activity
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
@@ -76,12 +79,24 @@ public class MainActivity extends Activity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment;
 
         if (position == NavigationDrawerFragment.SECTION_LENSES) {
             fragment = LensesFragment.newInstance();
         } else {
+
+            CaldroidFragment caldroidFragment = new CaldroidFragment();
+            Bundle args = new Bundle();
+            Calendar cal = Calendar.getInstance();
+            args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
+            args.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
+            caldroidFragment.setArguments(args);
+
+            //fragmentManager.beginTransaction()
+            //        .replace(R.id.container, caldroidFragment)
+            //        .commit();
+
             fragment = CalendarFragment.newInstance();
         }
 
@@ -94,7 +109,7 @@ public class MainActivity extends Activity
      * Called upon start of the app and when navigation drawer closes.
      */
     public void restoreActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
@@ -110,7 +125,7 @@ public class MainActivity extends Activity
             getMenuInflater().inflate(R.menu.global, menu);
 
             // do not show Settings item if showing Settings fragment
-            Fragment frgSettings = getFragmentManager().findFragmentByTag(FRAGMENT_SETTINGS);
+            Fragment frgSettings = getSupportFragmentManager().findFragmentByTag(FRAGMENT_SETTINGS);
             if (frgSettings != null && frgSettings.isVisible()) {
                 menu.removeItem(R.id.action_settings);
             }
@@ -128,15 +143,16 @@ public class MainActivity extends Activity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            //TODO: this will be a PreferenceActivity to support older devices.
             // Display the fragment in the main container.
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, new SettingsFragment(), FRAGMENT_SETTINGS)
-                    .addToBackStack(null)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .commit();
+            //getSupportFragmentManager().beginTransaction()
+            //        .replace(R.id.container, new SettingsFragment(), FRAGMENT_SETTINGS)
+            //        .addToBackStack(null)
+            //        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            //        .commit();
             return true;
         } else if (id == R.id.action_newlens) {
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, EditLensFragment.newInstance(null))
                     .addToBackStack(null)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -152,7 +168,7 @@ public class MainActivity extends Activity
     @Override
     public void onPackSelected(Uri packUri) {
         //TODO: show PackDetailsFragment
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, EditLensFragment.newInstance(packUri))
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)

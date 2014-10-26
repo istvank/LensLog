@@ -1,17 +1,18 @@
 package eu.istvank.apps.lenslog.fragments;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Fragment;
-import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,10 +26,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.provider.LensLogContract;
@@ -119,7 +117,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
-        ActionBar actionBar = getActivity().getActionBar();
+        //TODO: is this handled at all?
+        ActionBar actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(R.string.title_fragment_newlens);
 
