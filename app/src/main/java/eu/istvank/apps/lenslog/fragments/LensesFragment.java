@@ -51,7 +51,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     /**
      * Identifies a particular Loader being used in this component
      */
-    private static final int URL_LOADER = 0;
+    private static final int LENSES_LOADER = 0;
 
     /**
      * The Adapter which will be used to populate the ListView/GridView with
@@ -102,10 +102,10 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
         mListView.setOnItemClickListener(this);
 
         /*
-         * Initializes the CursorLoader. The URL_LOADER value is eventually passed
+         * Initializes the CursorLoader. The LENSES_LOADER value is eventually passed
          * to onCreateLoader().
          */
-        getLoaderManager().initLoader(URL_LOADER, null, this);
+        getLoaderManager().initLoader(LENSES_LOADER, null, this);
 
         setHasOptionsMenu(true);
 
@@ -204,7 +204,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
         * Takes action based on the ID of the Loader that's being created
         */
         switch (id) {
-            case URL_LOADER:
+            case LENSES_LOADER:
                 // Returns a new CursorLoader
                 String[] projection = new String[] {
                         LensLogContract.Packs._ID,

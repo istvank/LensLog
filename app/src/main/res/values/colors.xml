@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="CalendarBackgroundGreen">#90EE90</color>
+    <color name="CalendarBackgroundRed">#DB7093</color>
+
+</resources>
