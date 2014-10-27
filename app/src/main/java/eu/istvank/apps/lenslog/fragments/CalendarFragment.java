@@ -72,6 +72,7 @@ public class CalendarFragment extends Fragment implements LoaderManager.LoaderCa
         Calendar cal = Calendar.getInstance();
         args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
         args.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
+        args.putInt(CaldroidFragment.START_DAY_OF_WEEK, Calendar.getInstance().getFirstDayOfWeek());
         mCaldroid.setArguments(args);
 
         mCaldroid.setCaldroidListener(new CaldroidListener() {
