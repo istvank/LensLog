@@ -18,6 +18,7 @@ package eu.istvank.apps.lenslog.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -42,12 +43,16 @@ import eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LensesFragment.OnPackSelectedListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LensesFragment.OnPackSelectedListener, FragmentManager.OnBackStackChangedListener {
 
     public static final String TAG = "MainActivity";
 
     // Fragment Tags
     public static final String FRAGMENT_SETTINGS = "Settings";
+
+    // views
+    private Toolbar mToolbar;
+    private DrawerLayout mDrawerLayout;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -79,6 +84,10 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
+
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
+
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
@@ -91,16 +100,14 @@ public class MainActivity extends ActionBarActivity
             mFromSavedInstanceState = true;
         }
 
-        setContentView(R.layout.activity_main);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerLayout.setStatusBarBackgroundColor(getTitleColor());
-        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout.setStatusBarBackgroundColor(getTitleColor());
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerToggle = new ActionBarDrawerToggle(
-                this,  drawerLayout, toolbar,
+                this,  mDrawerLayout, mToolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close
         ) {
             @Override
@@ -125,23 +132,23 @@ public class MainActivity extends ActionBarActivity
             }
         };
 
-        drawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         if (savedInstanceState == null) {
             mNavigationDrawerFragment = new NavigationDrawerFragment();
-            mNavigationDrawerFragment.setUp(this, R.id.navigation_drawer, drawerLayout);
+            mNavigationDrawerFragment.setUp(this, R.id.navigation_drawer, mDrawerLayout);
             getSupportFragmentManager().beginTransaction().add(R.id.navigation_drawer, mNavigationDrawerFragment).commit();
         }
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
         if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
-            drawerLayout.openDrawer(findViewById(R.id.navigation_drawer));
+            mDrawerLayout.openDrawer(findViewById(R.id.navigation_drawer));
         }
 
-        drawerLayout.post(new Runnable() {
+        mDrawerLayout.post(new Runnable() {
             @Override
             public void run() {
                 mDrawerToggle.syncState();
@@ -219,7 +226,8 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onPackSelected(Uri packUri) {
-        //TODO: show PackDetailsFragment
+
+        //TODO: show PackDetailsFragment not the edit one
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, EditLensFragment.newInstance(packUri))
                 .addToBackStack(null)
@@ -227,4 +235,29 @@ public class MainActivity extends ActionBarActivity
                 .commit();
     }
 
+    @Override
+    public void onBackStackChanged() {
+        int entries = getSupportFragmentManager().getBackStackEntryCount();
+        if (entries < 1) {
+            // show the hamburger
+            mDrawerToggle.setDrawerIndicatorEnabled(true);
+            // enable swipe-to-right gesture
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        } else {
+            // don't show the hamburger
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
+            // disable swipe-to-right gesture
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+            // show the back arrow in the toolbar
+            mToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getSupportFragmentManager().popBackStack();
+                }
+            });
+        }
+    }
 }
