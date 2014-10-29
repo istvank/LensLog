@@ -209,14 +209,8 @@ public class MainActivity extends ActionBarActivity
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        } else if (id == R.id.action_newlens) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, EditLensFragment.newInstance(null))
-                    .addToBackStack(null)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .commit();
-            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 

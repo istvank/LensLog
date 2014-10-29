@@ -22,6 +22,8 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.melnykov.fab.FloatingActionButton;
+
 import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.provider.LensLogContract;
 
@@ -85,6 +87,15 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         registerForContextMenu(mListView);
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.attachToListView(mListView);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onPackSelected(null);
+            }
+        });
 
         mAdapter =
                 new SimpleCursorAdapter(

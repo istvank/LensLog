@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "eu.istvank.apps.lenslog"
-        minSdkVersion 11
+        minSdkVersion 14
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
@@ -33,4 +33,5 @@ dependencies {
     compile 'com.roomorama:caldroid:1.1.3'
     compile 'com.android.support:appcompat-v7:21.0.0'
     compile 'com.github.machinarius:preferencefragment:0.1.1'
+    compile 'com.melnykov:floatingactionbutton:1.0.6'
 }
