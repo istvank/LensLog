@@ -16,18 +16,14 @@
 
 package eu.istvank.apps.lenslog.fragments;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import com.github.machinarius.preferencefragment.PreferenceFragment;
+
 import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.receivers.NotifyAlarmReceiver;
 
