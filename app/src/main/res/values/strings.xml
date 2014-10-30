@@ -31,6 +31,8 @@
     <string name="action_save">Save</string>
     <string name="title_fragment_newlens">Add new lens</string>
     <string name="menu_delete">Delete</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!-- NewLensFragment -->
     <string name="label_name">Name</string>

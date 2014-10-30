@@ -62,7 +62,9 @@ public class NotifySchedulingService extends IntentService {
                         .setContentTitle(getString(R.string.app_name))
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(msg))
-                        .setContentText(getString(R.string.notification_question));
+                        .setContentText(getString(R.string.notification_question))
+                        .addAction(R.drawable.ic_done_white, getString(R.string.yes), contentIntent)
+                        .addAction(R.drawable.ic_close_white, getString(R.string.no), contentIntent);
 
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());

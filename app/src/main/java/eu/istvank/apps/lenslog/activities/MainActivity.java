@@ -245,8 +245,8 @@ public class MainActivity extends ActionBarActivity
 
             // show the back arrow in the toolbar
             mToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-
-            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            // enable back action for toolbar arrow
+            mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     getSupportFragmentManager().popBackStack();
