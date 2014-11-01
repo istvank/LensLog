@@ -38,6 +38,9 @@ public class NotifySchedulingService extends IntentService {
     public static final String TAG = "NotifySchedulingService";
     // An ID used to post the notification.
     public static final int NOTIFICATION_ID = 1;
+
+    public static final String NOTIFICATION_WORN = "NOTIFICATION_WORN";
+
     private NotificationManager mNotificationManager;
     NotificationCompat.Builder builder;
 
@@ -45,7 +48,7 @@ public class NotifySchedulingService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         sendNotification("Great!");
 
-        // Release the wake lock provided by the BroadcastReceiver.
+        // Release the wake lock provided by the BroadcastReceiver
         NotifyAlarmReceiver.completeWakefulIntent(intent);
     }
 
@@ -53,8 +56,23 @@ public class NotifySchedulingService extends IntentService {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+        //TODO: if user selects the main notification we should ask the question in the UI
+        PendingIntent mainPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
                 new Intent(this, MainActivity.class), 0);
+
+        // YES
+        Intent yesIntent = new Intent(this, MainActivity.class);
+        yesIntent.putExtra(NOTIFICATION_WORN, true);
+        yesIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent yesPendingIntent = PendingIntent.getActivity(this, MainActivity.REQUEST_YES,
+                yesIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // NO
+        Intent noIntent = new Intent(this, MainActivity.class);
+        noIntent.putExtra(NOTIFICATION_WORN, false);
+        noIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent noPendingIntent = PendingIntent.getActivity(this, MainActivity.REQUEST_NO,
+                noIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
@@ -63,10 +81,10 @@ public class NotifySchedulingService extends IntentService {
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(msg))
                         .setContentText(getString(R.string.notification_question))
-                        .addAction(R.drawable.ic_done_white, getString(R.string.yes), contentIntent)
-                        .addAction(R.drawable.ic_close_white, getString(R.string.no), contentIntent);
+                        .addAction(R.drawable.ic_done_white, getString(R.string.yes), yesPendingIntent)
+                        .addAction(R.drawable.ic_close_white, getString(R.string.no), noPendingIntent);
 
-        mBuilder.setContentIntent(contentIntent);
+        mBuilder.setContentIntent(mainPendingIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 }

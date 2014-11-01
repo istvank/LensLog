@@ -16,8 +16,12 @@
 
 package eu.istvank.apps.lenslog.activities;
 
+import android.app.NotificationManager;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,15 +35,24 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.fragments.CalendarFragment;
 import eu.istvank.apps.lenslog.fragments.EditLensFragment;
 import eu.istvank.apps.lenslog.fragments.LensesFragment;
 import eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment;
+import eu.istvank.apps.lenslog.provider.LensLogContract;
+import eu.istvank.apps.lenslog.receivers.NotifyAlarmReceiver;
+import eu.istvank.apps.lenslog.services.NotifySchedulingService;
+import hirondelle.date4j.DateTime;
 
 
 public class MainActivity extends ActionBarActivity
@@ -49,6 +62,10 @@ public class MainActivity extends ActionBarActivity
 
     // Fragment Tags
     public static final String FRAGMENT_SETTINGS = "Settings";
+
+    // RequestCodes
+    public static final int REQUEST_YES = 1;
+    public static final int REQUEST_NO = 2;
 
     // views
     private Toolbar mToolbar;
@@ -84,11 +101,25 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        if (getIntent().hasExtra(NotifySchedulingService.NOTIFICATION_WORN)) {
+            //TODO: save date in intent so that we can retrieve whether it still applies for the current date
+            DateTime utcDateTime = DateTime.today(TimeZone.getTimeZone("UTC"));
+            long utcDateLong = utcDateTime.getMilliseconds(TimeZone.getTimeZone("UTC"));
+            boolean isWorn = getIntent().getExtras().getBoolean(NotifySchedulingService.NOTIFICATION_WORN);
+
+            updateWorn(utcDateLong, isWorn);
+
+            // cancel notification
+            NotificationManager notificationManager = (NotificationManager)
+                    this.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(NotifySchedulingService.NOTIFICATION_ID);
+        }
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
@@ -156,6 +187,61 @@ public class MainActivity extends ActionBarActivity
         });
 
         mTitle = getTitle();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (intent.hasExtra(NotifySchedulingService.NOTIFICATION_WORN)) {
+            //TODO: save date in intent so that we can retrieve whether it still applies for the current date
+            DateTime utcDateTime = DateTime.today(TimeZone.getTimeZone("UTC"));
+            long utcDateLong = utcDateTime.getMilliseconds(TimeZone.getTimeZone("UTC"));
+            boolean isWorn = intent.getExtras().getBoolean(NotifySchedulingService.NOTIFICATION_WORN);
+
+            updateWorn(utcDateLong, isWorn);
+
+            // cancel notification
+            NotificationManager notificationManager = (NotificationManager)
+                    this.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(NotifySchedulingService.NOTIFICATION_ID);
+        }
+
+        super.onNewIntent(intent);
+    }
+
+    private void updateWorn(long datetime, boolean worn) {
+        // check if today is already in database
+        String[] projection = new String[] {
+                LensLogContract.DaysWorn._ID
+        };
+        String whereArg = LensLogContract.DaysWorn.DATETIME + " = ?";
+        String[] selectionArgs = new String[] { String.valueOf(datetime) };
+        Cursor c = getContentResolver().query(LensLogContract.DaysWorn.CONTENT_URI, projection, whereArg, selectionArgs, null);
+        ContentValues values = new ContentValues();
+        values.put(LensLogContract.DaysWorn.WASWORN, worn);
+        if (c != null && c.moveToFirst()) {
+            // date exists so update
+            getContentResolver().update(LensLogContract.DaysWorn.CONTENT_URI, values, whereArg, selectionArgs);
+        } else {
+            // date does not exist so insert
+            values.put(LensLogContract.DaysWorn.DATETIME, datetime);
+            getContentResolver().insert(LensLogContract.DaysWorn.CONTENT_URI, values);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Date date = new Date();
+        DateTime utcDateTime = DateTime.today(TimeZone.getTimeZone("UTC"));
+        //DateTime utcDateTime = DateTime.forDateOnly(date.getYear(), date.getMonth(), date.getDay());
+        long utcDateLong = utcDateTime.getMilliseconds(TimeZone.getTimeZone("UTC"));
+        switch(requestCode) {
+            case REQUEST_YES:
+                break;
+            case REQUEST_NO:
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
