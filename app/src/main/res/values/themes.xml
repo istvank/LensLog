@@ -10,12 +10,18 @@
         <!-- disable window actionbar, cause u have an toolbar -->
         <item name="windowActionBar">false</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="android:popupMenuStyle">@style/LensLog.PopupMenu</item>
     </style>
 
     <!--styling color for arrow-->
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
         <item name="color">@android:color/white</item>
+    </style>
+
+    <!--styling for options menu-->
+    <style name="LensLog.PopupMenu" parent="Widget.AppCompat.ListPopupWindow">
+        <item name="android:popupBackground">@color/primaryColor</item>
     </style>
 
 </resources>
