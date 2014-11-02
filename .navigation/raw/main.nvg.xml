@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigationModel
+  ns = "http://schemas.android.com?import=com.android.navigation.*">
+  <locations  
+    class = "java.util.ArrayList">
+    <entry>
+      <key      
+        class = "com.android.navigation.ActivityState"      
+        className = "eu.istvank.apps.lenslog.activities.MainActivity">
+        <location        
+          id = "point0"        
+          x = "0"        
+          y = "0"/>
+      </key>
+      <value      
+        x = "480"      
+        y = "160"      
+        class = "com.android.navigation.Point"/>
+    </entry>
+    <entry>
+      <key      
+        class = "com.android.navigation.MenuState"      
+        xmlResourceName = "global">
+        <location        
+          idref = "point0"/>
+      </key>
+      <value      
+        x = "1768"      
+        y = "100"      
+        class = "com.android.navigation.Point"/>
+    </entry>
+    <entry>
+      <key      
+        class = "com.android.navigation.ActivityState"      
+        className = "eu.istvank.apps.lenslog.fragments.LensesFragment">
+        <location        
+          idref = "point0"/>
+      </key>
+      <value      
+        x = "1920"      
+        y = "640"      
+        class = "com.android.navigation.Point"/>
+    </entry>
+    <entry>
+      <key      
+        class = "com.android.navigation.ActivityState"      
+        className = "eu.istvank.apps.lenslog.fragments.EditLensFragment">
+        <location        
+          idref = "point0"/>
+      </key>
+      <value      
+        x = "1920"      
+        y = "640"      
+        class = "com.android.navigation.Point"/>
+    </entry>
+  </locations>
+</navigationModel>

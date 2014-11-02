@@ -52,6 +52,7 @@ import eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment;
 import eu.istvank.apps.lenslog.provider.LensLogContract;
 import eu.istvank.apps.lenslog.receivers.NotifyAlarmReceiver;
 import eu.istvank.apps.lenslog.services.NotifySchedulingService;
+import eu.istvank.apps.lenslog.util.HelpUtils;
 import hirondelle.date4j.DateTime;
 
 
@@ -294,6 +295,9 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (id == R.id.action_about) {
+            HelpUtils.showAbout(this);
             return true;
         }
 
