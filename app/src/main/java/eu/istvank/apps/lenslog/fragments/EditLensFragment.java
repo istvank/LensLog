@@ -231,12 +231,6 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
 
             // close this fragment and return to previous
             getFragmentManager().popBackStack();
-
-            // keyboard stays open after fragment is removed, so close it
-            InputMethodManager inputManager = (InputMethodManager)
-                    getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                    InputMethodManager.HIDE_NOT_ALWAYS);
         }
 
         return super.onOptionsItemSelected(item);
@@ -256,6 +250,12 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onDetach() {
         super.onDetach();
+
+        // keyboard stays open after fragment is removed, so close it
+        InputMethodManager inputManager = (InputMethodManager)
+                getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     /**

@@ -47,12 +47,19 @@
          If you're not building against API 17 or higher, use
          android:layout_gravity="left" instead. -->
     <!-- The drawer is given a fixed width in dp and extends the full height of
-         the container. -->
+         the container.
     <FrameLayout android:id="@+id/navigation_drawer"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="@dimen/navigation_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="left"
+        tools:layout="@layout/fragment_navigation_drawer" />-->
+    <fragment android:id="@+id/navigation_drawer"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="@dimen/navigation_drawer_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:name="eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment"
         tools:layout="@layout/fragment_navigation_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

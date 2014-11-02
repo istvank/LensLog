@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -59,6 +60,7 @@ public class CalendarFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
@@ -67,65 +69,70 @@ public class CalendarFragment extends Fragment implements LoaderManager.LoaderCa
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
 
-        mCaldroid = new CaldroidFragment();
-        Bundle args = new Bundle();
-        Calendar cal = Calendar.getInstance();
-        args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
-        args.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
-        args.putInt(CaldroidFragment.START_DAY_OF_WEEK, Calendar.getInstance().getFirstDayOfWeek());
-        mCaldroid.setArguments(args);
+        mCaldroid = (CaldroidFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.calendar_container);
 
-        mCaldroid.setCaldroidListener(new CaldroidListener() {
-            @Override
-            public void onSelectDate(Date date, View view) {
-                long localDateLong = date.getTime();
-                DateTime localDatetime = DateTime.forInstant(localDateLong, TimeZone.getDefault());
-                DateTime utcDateTime = DateTime.forDateOnly(localDatetime.getYear(), localDatetime.getMonth(), localDatetime.getDay());
-                long utcDateLong = utcDateTime.getMilliseconds(TimeZone.getTimeZone("UTC"));
+        if (mCaldroid == null) {
+            mCaldroid = new CaldroidFragment();
+            mCaldroid.setRetainInstance(true);
 
-                // check if the date is already in the backgrounds HashMap and if not the background
-                // is empty.
-                if (mCalendarBackgrounds.containsKey(localDatetime) && (mCalendarBackgrounds.get(localDatetime) != com.caldroid.R.drawable.cell_bg)) {
-                    // check color
-                    int color = mCalendarBackgrounds.get(localDatetime);
-                    String whereArg = LensLogContract.DaysWorn.DATETIME + " = ?";
-                    String[] selectionArgs = new String[] { String.valueOf(utcDateLong) };
-                    if (color == R.color.CalendarBackgroundGreen) {
-                        // now worn should be set to false
-                        ContentValues values = new ContentValues();
-                        values.put(LensLogContract.DaysWorn.WASWORN, false);
-                        getActivity().getContentResolver().update(LensLogContract.DaysWorn.CONTENT_URI, values, whereArg, selectionArgs);
-                        view.setBackgroundResource(R.color.CalendarBackgroundRed);
+            Bundle args = new Bundle();
+            Calendar cal = Calendar.getInstance();
+            args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
+            args.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
+            args.putInt(CaldroidFragment.START_DAY_OF_WEEK, Calendar.getInstance().getFirstDayOfWeek());
+            mCaldroid.setArguments(args);
+
+            mCaldroid.setCaldroidListener(new CaldroidListener() {
+                @Override
+                public void onSelectDate(Date date, View view) {
+                    long localDateLong = date.getTime();
+                    DateTime localDatetime = DateTime.forInstant(localDateLong, TimeZone.getDefault());
+                    DateTime utcDateTime = DateTime.forDateOnly(localDatetime.getYear(), localDatetime.getMonth(), localDatetime.getDay());
+                    long utcDateLong = utcDateTime.getMilliseconds(TimeZone.getTimeZone("UTC"));
+
+                    // check if the date is already in the backgrounds HashMap and if not the background
+                    // is empty.
+                    if (mCalendarBackgrounds.containsKey(localDatetime) && (mCalendarBackgrounds.get(localDatetime) != com.caldroid.R.drawable.cell_bg)) {
+                        // check color
+                        int color = mCalendarBackgrounds.get(localDatetime);
+                        String whereArg = LensLogContract.DaysWorn.DATETIME + " = ?";
+                        String[] selectionArgs = new String[] { String.valueOf(utcDateLong) };
+                        if (color == R.color.CalendarBackgroundGreen) {
+                            // now worn should be set to false
+                            ContentValues values = new ContentValues();
+                            values.put(LensLogContract.DaysWorn.WASWORN, false);
+                            getActivity().getContentResolver().update(LensLogContract.DaysWorn.CONTENT_URI, values, whereArg, selectionArgs);
+                            view.setBackgroundResource(R.color.CalendarBackgroundRed);
+                        } else {
+                            // delete the entry
+                            getActivity().getContentResolver().delete(LensLogContract.DaysWorn.CONTENT_URI, whereArg, selectionArgs);
+                            // reset background
+                            view.setBackgroundResource(com.caldroid.R.drawable.cell_bg);
+                            // put the resource to the backgrounds array. We have to do this due to an
+                            // ugly characteristic of the Caldroid library: the background HashMap is
+                            // not reset and we have to stick with the backgrounds that were already
+                            // there before.
+                            mCalendarBackgrounds.put(localDatetime, com.caldroid.R.drawable.cell_bg);
+                        }
                     } else {
-                        // delete the entry
-                        getActivity().getContentResolver().delete(LensLogContract.DaysWorn.CONTENT_URI, whereArg, selectionArgs);
-                        // reset background
-                        view.setBackgroundResource(com.caldroid.R.drawable.cell_bg);
-                        // put the resource to the backgrounds array. We have to do this due to an
-                        // ugly characteristic of the Caldroid library: the background HashMap is
-                        // not reset and we have to stick with the backgrounds that were already
-                        // there before.
-                        mCalendarBackgrounds.put(localDatetime, com.caldroid.R.drawable.cell_bg);
+                        // add date to database
+                        ContentValues values = new ContentValues();
+                        values.put(LensLogContract.DaysWorn.DATETIME, utcDateLong);
+                        values.put(LensLogContract.DaysWorn.WASWORN, true);
+                        // add date to database
+                        getActivity().getContentResolver().insert(LensLogContract.DaysWorn.CONTENT_URI, values);
+                        view.setBackgroundResource(R.color.CalendarBackgroundGreen);
                     }
-                } else {
-                    // add date to database
-                    ContentValues values = new ContentValues();
-                    values.put(LensLogContract.DaysWorn.DATETIME, utcDateLong);
-                    values.put(LensLogContract.DaysWorn.WASWORN, true);
-                    // add date to database
-                    getActivity().getContentResolver().insert(LensLogContract.DaysWorn.CONTENT_URI, values);
-                    view.setBackgroundResource(R.color.CalendarBackgroundGreen);
                 }
-            }
-        });
+            });
+        }
+
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.calendar_container, mCaldroid)
+                .commit();
 
         // Initialize the CursorLoader to retrieve the days when the lenses were worn.
         getLoaderManager().initLoader(CALENDAR_LOADER, null, this);
-
-
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.calendar_container, mCaldroid)
-                .commit();
 
         return view;
     }

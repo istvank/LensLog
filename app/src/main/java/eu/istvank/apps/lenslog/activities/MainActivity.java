@@ -21,8 +21,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,13 +35,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 import eu.istvank.apps.lenslog.R;
@@ -50,7 +47,6 @@ import eu.istvank.apps.lenslog.fragments.EditLensFragment;
 import eu.istvank.apps.lenslog.fragments.LensesFragment;
 import eu.istvank.apps.lenslog.fragments.NavigationDrawerFragment;
 import eu.istvank.apps.lenslog.provider.LensLogContract;
-import eu.istvank.apps.lenslog.receivers.NotifyAlarmReceiver;
 import eu.istvank.apps.lenslog.services.NotifySchedulingService;
 import eu.istvank.apps.lenslog.util.HelpUtils;
 import hirondelle.date4j.DateTime;
@@ -62,7 +58,10 @@ public class MainActivity extends ActionBarActivity
     public static final String TAG = "MainActivity";
 
     // Fragment Tags
+    public static final String FRAGMENT_NAVIGATION_DRAWER = "NavigationDrawer";
     public static final String FRAGMENT_SETTINGS = "Settings";
+    public static final String FRAGMENT_LENSES = "Lenses";
+    public static final String FRAGMENT_CALENDAR = "Calendar";
 
     // RequestCodes
     public static final int REQUEST_YES = 1;
@@ -77,7 +76,6 @@ public class MainActivity extends ActionBarActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private ActionBarDrawerToggle mDrawerToggle;
-    private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
     /**
@@ -91,17 +89,18 @@ public class MainActivity extends ActionBarActivity
      */
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
-    private int mCurrentSelectedPosition = 0;
-
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
 
+    // indicates whether the hamburger is shown (false) or the back button (true)
+    private boolean mBackEnabled = false;
+    private static final String STATE_BACK_ENABLED = "state_back_enabled";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         setContentView(R.layout.activity_main);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
@@ -122,18 +121,13 @@ public class MainActivity extends ActionBarActivity
             notificationManager.cancel(NotifySchedulingService.NOTIFICATION_ID);
         }
 
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
-
-        if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-            mFromSavedInstanceState = true;
-        }
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setStatusBarBackgroundColor(getTitleColor());
@@ -168,16 +162,22 @@ public class MainActivity extends ActionBarActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        if (savedInstanceState == null) {
-            mNavigationDrawerFragment = new NavigationDrawerFragment();
-            mNavigationDrawerFragment.setUp(this, R.id.navigation_drawer, mDrawerLayout);
-            getSupportFragmentManager().beginTransaction().add(R.id.navigation_drawer, mNavigationDrawerFragment).commit();
-        }
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mNavigationDrawerFragment.setUp(this, R.id.navigation_drawer, mDrawerLayout);
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
-        if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
+        if (!mUserLearnedDrawer) {
             mDrawerLayout.openDrawer(findViewById(R.id.navigation_drawer));
+        }
+
+        if (savedInstanceState != null) {
+            // probably configuration change
+            mBackEnabled = savedInstanceState.getBoolean(STATE_BACK_ENABLED);
+            setBackEnabled(mBackEnabled);
+        } else {
+            // app freshly started, show calendar fragment
+            onNavigationDrawerItemSelected(NavigationDrawerFragment.SECTION_CALENDAR);
         }
 
         mDrawerLayout.post(new Runnable() {
@@ -188,6 +188,19 @@ public class MainActivity extends ActionBarActivity
         });
 
         mTitle = getTitle();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_BACK_ENABLED, mBackEnabled);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Forward the new configuration the drawer toggle component.
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -230,35 +243,28 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Date date = new Date();
-        DateTime utcDateTime = DateTime.today(TimeZone.getTimeZone("UTC"));
-        //DateTime utcDateTime = DateTime.forDateOnly(date.getYear(), date.getMonth(), date.getDay());
-        long utcDateLong = utcDateTime.getMilliseconds(TimeZone.getTimeZone("UTC"));
-        switch(requestCode) {
-            case REQUEST_YES:
-                break;
-            case REQUEST_NO:
-                break;
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment;
+        String tag;
 
         if (position == NavigationDrawerFragment.SECTION_LENSES) {
-            fragment = LensesFragment.newInstance();
+            fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_LENSES);
+            if (fragment == null) {
+                fragment = LensesFragment.newInstance();
+            }
+            tag = FRAGMENT_LENSES;
         } else {
-            fragment = CalendarFragment.newInstance();
+            fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_CALENDAR);
+            if (fragment == null) {
+                fragment = CalendarFragment.newInstance();
+            }
+            tag = FRAGMENT_CALENDAR;
         }
 
         fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
+                .replace(R.id.container, fragment, tag)
                 .commit();
     }
 
@@ -289,6 +295,9 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -310,7 +319,6 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onPackSelected(Uri packUri) {
-
         //TODO: show PackDetailsFragment not the edit one
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, EditLensFragment.newInstance(packUri))
@@ -323,6 +331,17 @@ public class MainActivity extends ActionBarActivity
     public void onBackStackChanged() {
         int entries = getSupportFragmentManager().getBackStackEntryCount();
         if (entries < 1) {
+            // show the hamburger
+            setBackEnabled(false);
+        } else {
+            // show the back button
+            setBackEnabled(true);
+        }
+    }
+
+    private void setBackEnabled(boolean backEnabled) {
+        mBackEnabled = backEnabled;
+        if (!backEnabled) {
             // show the hamburger
             mDrawerToggle.setDrawerIndicatorEnabled(true);
             // enable swipe-to-right gesture
