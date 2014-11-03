@@ -101,14 +101,14 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
         mAdapter =
                 new SimpleCursorAdapter(
                         getActivity(),                          // Current context
-                        android.R.layout.simple_list_item_1,    // Layout for a single row
+                        R.layout.lenses_list_item,    // Layout for a single row
                         null,                                   // No Cursor yet
-                        new String[] {LensLogContract.PacksColumns.NAME},   // Cursor columns to use
-                        new int[] {android.R.id.text1},         // Layout fields to use
+                        new String[] {LensLogContract.Packs.NAME, LensLogContract.Packs.BRAND, LensLogContract.Packs.EYE},   // Cursor columns to use
+                        new int[] {R.id.lens_name, R.id.brand, R.id.eye},         // Layout fields to use
                         0                                       // No flags
                 );
 
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -220,7 +220,9 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
                 // Returns a new CursorLoader
                 String[] projection = new String[] {
                         LensLogContract.Packs._ID,
-                        LensLogContract.Packs.NAME
+                        LensLogContract.Packs.NAME,
+                        LensLogContract.Packs.BRAND,
+                        LensLogContract.Packs.EYE
                 };
                 return new CursorLoader(
                         getActivity(),  // Parent activity context
