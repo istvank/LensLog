@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="primaryColor">#ff009688</color>
-    <color name="primaryColorDark">#ff007a6c</color>
+    <!-- Material blue 800 and 900 -->
+    <color name="primaryColor">#ff3b50ce</color>
+    <color name="primaryColorDark">#ff2a36b1</color>
 
-    <color name="colorPrimary">@color/material_blue_grey_800</color>
-    <color name="colorPrimaryDark">@color/material_blue_grey_900</color>
-
-    <color name="colorSecondary">@color/material_deep_teal_200</color>
-    <color name="colorSecondaryDark">@color/material_deep_teal_500</color>
-
-    <color name="windowBackgroundColor">#333333</color>
-    <color name="black_translucent">#80000000</color>
+    <!-- Material blue 400 and 600 -->
+    <color name="fab_primary">#ff738ffe</color>
+    <color name="fab_primary_pressed">#ff4e6cef</color>
+    <!-- Material pink 400 -->
+    <color name="fab_ripple">#ffec407a</color>
 
     <color name="CalendarBackgroundGreen">#90EE90</color>
     <color name="CalendarBackgroundRed">#DB7093</color>
-
-    <color name="fab_primary">#ff009688</color>
-    <color name="fab_primary_pressed">#ff007a6c</color>
-    <color name="fab_ripple">#ff80ab</color>
-    <color name="accent">#ff4081</color>
-    <color name="accent_pressed">#f50057</color>
 
 </resources>
