@@ -5,6 +5,9 @@
     <color name="primaryColor">#ff3b50ce</color>
     <color name="primaryColorDark">#ff2a36b1</color>
 
+    <!-- Material indigo 400 -->
+    <color name="accent">#5c6bc0</color>
+
     <!-- Material blue 400 and 600 -->
     <color name="fab_primary">#ff738ffe</color>
     <color name="fab_primary_pressed">#ff4e6cef</color>
