@@ -21,10 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.Calendar;
 
@@ -48,15 +50,20 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     private EditText mEdtName;
     private EditText mEdtBrand;
     private Spinner mSpnEye;
-    private EditText mEdtSphere;
-    private EditText mEdtBaseCurve;
-    private EditText mEdtDiameter;
-    private EditText mEdtCylinder;
-    private EditText mEdtAxis;
-    private EditText mEdtAdd;
     private EditText mEdtExpiration;
     private EditText mEdtPurchased;
     private EditText mEdtShop;
+    private Spinner mSpnType;
+    private EditText mEdtBaseCurve;
+    private EditText mEdtDiameter;
+    private TextView mLblSphere;
+    private EditText mEdtSphere;
+    private TextView mLblCylinder;
+    private EditText mEdtCylinder;
+    private TextView mLblAxis;
+    private EditText mEdtAxis;
+    private TextView mLblAdd;
+    private EditText mEdtAdd;
 
     /**
      * The calendar for the calendar picker
@@ -81,6 +88,12 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     public static final int EYE_LEFT = 0;
     public static final int EYE_RIGHT = 1;
     public static final int EYE_BOTH = 2;
+
+    // the types of lenses
+    public static final int LENS_TYPE_MYOPIA = 0;
+    public static final int LENS_TYPE_ASTIGMATISM = 1;
+    public static final int LENS_TYPE_MULTIFOCAL = 2;
+    public static final int LENS_TYPE_DECORATIVE = 3;
 
     /**
      * Identifies a particular Loader being used in this component
@@ -130,17 +143,44 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         mEdtBrand = (EditText) view.findViewById(R.id.newlens_edt_brand);
         mSpnEye = (Spinner) view.findViewById(R.id.newlens_spn_eye);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+        final ArrayAdapter<CharSequence> adapterEye = ArrayAdapter.createFromResource(getActivity(),
                 R.array.eye_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterEye.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        mSpnEye.setAdapter(adapter);
-        mEdtSphere = (EditText) view.findViewById(R.id.newlens_edt_sphere);
+        mSpnEye.setAdapter(adapterEye);
+
+        // Lens type spinner
+        mSpnType = (Spinner) view.findViewById(R.id.newlens_spn_type);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapterType = ArrayAdapter.createFromResource(getActivity(),
+                R.array.lens_type_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapterType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mSpnType.setAdapter(adapterType);
+        mSpnType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                togglePrescriptionFields(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                togglePrescriptionFields(adapterView.getSelectedItemPosition());
+            }
+        });
+
         mEdtBaseCurve = (EditText) view.findViewById(R.id.newlens_edt_base_curve);
         mEdtDiameter = (EditText) view.findViewById(R.id.newlens_edt_diameter);
+
+        mLblSphere = (TextView) view.findViewById(R.id.newlens_lbl_sphere);
+        mEdtSphere = (EditText) view.findViewById(R.id.newlens_edt_sphere);
+        mLblCylinder = (TextView) view.findViewById(R.id.newlens_lbl_cylinder);
         mEdtCylinder = (EditText) view.findViewById(R.id.newlens_edt_cylinder);
+        mLblAxis = (TextView) view.findViewById(R.id.newlens_lbl_axis);
         mEdtAxis = (EditText) view.findViewById(R.id.newlens_edt_axis);
+        mLblAdd = (TextView) view.findViewById(R.id.newlens_lbl_add);
         mEdtAdd = (EditText) view.findViewById(R.id.newlens_edt_add);
         mEdtExpiration = (EditText) view.findViewById(R.id.newlens_edt_expiration);
         mEdtExpiration.setOnClickListener(new View.OnClickListener() {
@@ -197,6 +237,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             ContentValues values = new ContentValues();
             values.put(LensLogContract.PacksColumns.NAME, mEdtName.getText().toString());
             values.put(LensLogContract.PacksColumns.BRAND, mEdtBrand.getText().toString());
+
+            // eye
             int eyePos = mSpnEye.getSelectedItemPosition();
             String eye;
             switch (eyePos) {
@@ -210,7 +252,25 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                     eye = "both";
             }
             values.put(LensLogContract.PacksColumns.EYE, eye);
-            values.put(LensLogContract.PacksColumns.LENS_TYPE, "");
+
+            // lens type
+            int lensTypePos = mSpnType.getSelectedItemPosition();
+            String lensType;
+            switch (lensTypePos) {
+                case LENS_TYPE_ASTIGMATISM:
+                    lensType = "astigmatism";
+                    break;
+                case LENS_TYPE_MULTIFOCAL:
+                    lensType = "multifocal";
+                    break;
+                case LENS_TYPE_DECORATIVE:
+                    lensType = "decorative";
+                    break;
+                default:
+                    lensType = "myopia";
+            }
+            values.put(LensLogContract.PacksColumns.LENS_TYPE, lensType);
+
             values.put(LensLogContract.PacksColumns.SPHERE, mEdtSphere.getText().toString());
             values.put(LensLogContract.PacksColumns.BASE_CURVE, mEdtBaseCurve.getText().toString());
             values.put(LensLogContract.PacksColumns.DIAMETER, mEdtDiameter.getText().toString());
@@ -285,6 +345,56 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     /**
+     * Shows and hides input fields according to lens type
+     *
+     * @param i the index of the current lens type.
+     */
+    private void togglePrescriptionFields(int i) {
+        switch (i) {
+            case LENS_TYPE_MYOPIA:
+                mLblSphere.setVisibility(View.VISIBLE);
+                mEdtSphere.setVisibility(View.VISIBLE);
+                mLblCylinder.setVisibility(View.GONE);
+                mEdtCylinder.setVisibility(View.GONE);
+                mLblAxis.setVisibility(View.GONE);
+                mEdtAxis.setVisibility(View.GONE);
+                mLblAdd.setVisibility(View.GONE);
+                mEdtAdd.setVisibility(View.GONE);
+                break;
+            case LENS_TYPE_ASTIGMATISM:
+                mLblSphere.setVisibility(View.VISIBLE);
+                mEdtSphere.setVisibility(View.VISIBLE);
+                mLblCylinder.setVisibility(View.VISIBLE);
+                mEdtCylinder.setVisibility(View.VISIBLE);
+                mLblAxis.setVisibility(View.VISIBLE);
+                mEdtAxis.setVisibility(View.VISIBLE);
+                mLblAdd.setVisibility(View.GONE);
+                mEdtAdd.setVisibility(View.GONE);
+                break;
+            case LENS_TYPE_MULTIFOCAL:
+                mLblSphere.setVisibility(View.VISIBLE);
+                mEdtSphere.setVisibility(View.VISIBLE);
+                mLblCylinder.setVisibility(View.GONE);
+                mEdtCylinder.setVisibility(View.GONE);
+                mLblAxis.setVisibility(View.GONE);
+                mEdtAxis.setVisibility(View.GONE);
+                mLblAdd.setVisibility(View.VISIBLE);
+                mEdtAdd.setVisibility(View.VISIBLE);
+                break;
+            default:
+                // also applies to LENS_TYPE_DECORATIVE
+                mLblSphere.setVisibility(View.GONE);
+                mEdtSphere.setVisibility(View.GONE);
+                mLblCylinder.setVisibility(View.GONE);
+                mEdtCylinder.setVisibility(View.GONE);
+                mLblAxis.setVisibility(View.GONE);
+                mEdtAxis.setVisibility(View.GONE);
+                mLblAdd.setVisibility(View.GONE);
+                mEdtAdd.setVisibility(View.GONE);
+        }
+    }
+
+    /**
      * Interfaces
      */
 
@@ -301,6 +411,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                         LensLogContract.Packs.NAME,
                         LensLogContract.Packs.BRAND,
                         LensLogContract.Packs.EYE,
+                        LensLogContract.Packs.LENS_TYPE,
                         LensLogContract.Packs.SPHERE,
                         LensLogContract.Packs.BASE_CURVE,
                         LensLogContract.Packs.DIAMETER,
@@ -330,6 +441,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         data.moveToFirst();
         mEdtName.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.NAME)));
         mEdtBrand.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.BRAND)));
+
+        // eye
         int eyeSelection = EYE_LEFT;
         String eye = data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.EYE));
         if (eye.equals("right")) {
@@ -338,6 +451,20 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             eyeSelection = EYE_BOTH;
         }
         mSpnEye.setSelection(eyeSelection);
+
+        // lens type
+        int lensTypeSelection = LENS_TYPE_MYOPIA;
+        String lensType = data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.LENS_TYPE));
+        if (lensType.equals("astigmatism")) {
+            lensTypeSelection = LENS_TYPE_ASTIGMATISM;
+        } else if (lensType.equals("multifocal")) {
+            lensTypeSelection = LENS_TYPE_MULTIFOCAL;
+        } else if (lensType.equals("decorative")) {
+            lensTypeSelection = LENS_TYPE_DECORATIVE;
+        }
+        mSpnType.setSelection(lensTypeSelection);
+        togglePrescriptionFields(lensTypeSelection);
+
         mEdtSphere.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.SPHERE)));
         mEdtBaseCurve.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.BASE_CURVE)));
         mEdtDiameter.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.DIAMETER)));

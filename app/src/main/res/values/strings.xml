@@ -67,6 +67,13 @@
         <item>Both</item>
     </string-array>
 
+    <string-array name="lens_type_array">
+        <item>Myopia/Hypermetropia</item>
+        <item>Astigmatism</item>
+        <item>Multifocal/Presbyopia</item>
+        <item>Decorative</item>
+    </string-array>
+
     <string name="label_sphere">Sphere</string>
     <string name="label_base_curve">Base Curve</string>
     <string name="label_diameter">Diameter</string>
@@ -76,6 +83,7 @@
     <string name="label_expiration">Expiration date</string>
     <string name="label_purchased">Purchase date</string>
     <string name="label_shop">Shop name</string>
+    <string name="label_type">Lens type</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="hello_world">Hello world!</string>
 
