@@ -235,8 +235,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_save) {
             ContentValues values = new ContentValues();
-            values.put(LensLogContract.PacksColumns.NAME, mEdtName.getText().toString());
-            values.put(LensLogContract.PacksColumns.BRAND, mEdtBrand.getText().toString());
+            values.put(LensLogContract.PackagesColumns.NAME, mEdtName.getText().toString());
+            values.put(LensLogContract.PackagesColumns.BRAND, mEdtBrand.getText().toString());
 
             // eye
             int eyePos = mSpnEye.getSelectedItemPosition();
@@ -251,7 +251,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                 default:
                     eye = "both";
             }
-            values.put(LensLogContract.PacksColumns.EYE, eye);
+            values.put(LensLogContract.PackagesColumns.EYE, eye);
 
             // lens type
             int lensTypePos = mSpnType.getSelectedItemPosition();
@@ -269,24 +269,24 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                 default:
                     lensType = "myopia";
             }
-            values.put(LensLogContract.PacksColumns.LENS_TYPE, lensType);
+            values.put(LensLogContract.PackagesColumns.LENS_TYPE, lensType);
 
-            values.put(LensLogContract.PacksColumns.SPHERE, mEdtSphere.getText().toString());
-            values.put(LensLogContract.PacksColumns.BASE_CURVE, mEdtBaseCurve.getText().toString());
-            values.put(LensLogContract.PacksColumns.DIAMETER, mEdtDiameter.getText().toString());
-            values.put(LensLogContract.PacksColumns.CYLINDER, mEdtCylinder.getText().toString());
-            values.put(LensLogContract.PacksColumns.AXIS, mEdtAxis.getText().toString());
-            values.put(LensLogContract.PacksColumns.ADD_POWER, mEdtAdd.getText().toString());
-            values.put(LensLogContract.PacksColumns.EXPIRATION_DATE, mExpirationDate);
-            values.put(LensLogContract.PacksColumns.PURCHASED_DATE, mPurchasedDate);
-            values.put(LensLogContract.PacksColumns.SHOP, mEdtShop.getText().toString());
+            values.put(LensLogContract.PackagesColumns.SPHERE, mEdtSphere.getText().toString());
+            values.put(LensLogContract.PackagesColumns.BASE_CURVE, mEdtBaseCurve.getText().toString());
+            values.put(LensLogContract.PackagesColumns.DIAMETER, mEdtDiameter.getText().toString());
+            values.put(LensLogContract.PackagesColumns.CYLINDER, mEdtCylinder.getText().toString());
+            values.put(LensLogContract.PackagesColumns.AXIS, mEdtAxis.getText().toString());
+            values.put(LensLogContract.PackagesColumns.ADD_POWER, mEdtAdd.getText().toString());
+            values.put(LensLogContract.PackagesColumns.EXPIRATION_DATE, mExpirationDate);
+            values.put(LensLogContract.PackagesColumns.PURCHASED_DATE, mPurchasedDate);
+            values.put(LensLogContract.PackagesColumns.SHOP, mEdtShop.getText().toString());
 
             if (mLensUri != null) {
-                // change existing lens pack
+                // change existing lens package
                 getActivity().getContentResolver().update(mLensUri, values, null, null);
             } else {
                 // add new lens to database
-                getActivity().getContentResolver().insert(LensLogContract.Packs.CONTENT_URI, values);
+                getActivity().getContentResolver().insert(LensLogContract.Packages.CONTENT_URI, values);
             }
 
             // close this fragment and return to previous
@@ -407,20 +407,20 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             case URL_LOADER:
                 // Returns a new CursorLoader
                 String[] projection = new String[] {
-                        LensLogContract.Packs._ID,
-                        LensLogContract.Packs.NAME,
-                        LensLogContract.Packs.BRAND,
-                        LensLogContract.Packs.EYE,
-                        LensLogContract.Packs.LENS_TYPE,
-                        LensLogContract.Packs.SPHERE,
-                        LensLogContract.Packs.BASE_CURVE,
-                        LensLogContract.Packs.DIAMETER,
-                        LensLogContract.Packs.CYLINDER,
-                        LensLogContract.Packs.AXIS,
-                        LensLogContract.Packs.ADD_POWER,
-                        LensLogContract.Packs.EXPIRATION_DATE,
-                        LensLogContract.Packs.PURCHASED_DATE,
-                        LensLogContract.Packs.SHOP
+                        LensLogContract.Packages._ID,
+                        LensLogContract.Packages.NAME,
+                        LensLogContract.Packages.BRAND,
+                        LensLogContract.Packages.EYE,
+                        LensLogContract.Packages.LENS_TYPE,
+                        LensLogContract.Packages.SPHERE,
+                        LensLogContract.Packages.BASE_CURVE,
+                        LensLogContract.Packages.DIAMETER,
+                        LensLogContract.Packages.CYLINDER,
+                        LensLogContract.Packages.AXIS,
+                        LensLogContract.Packages.ADD_POWER,
+                        LensLogContract.Packages.EXPIRATION_DATE,
+                        LensLogContract.Packages.PURCHASED_DATE,
+                        LensLogContract.Packages.SHOP
                 };
                 return new CursorLoader(
                         getActivity(),  // Parent activity context
@@ -439,12 +439,12 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         data.moveToFirst();
-        mEdtName.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.NAME)));
-        mEdtBrand.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.BRAND)));
+        mEdtName.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.NAME)));
+        mEdtBrand.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.BRAND)));
 
         // eye
         int eyeSelection = EYE_LEFT;
-        String eye = data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.EYE));
+        String eye = data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.EYE));
         if (eye.equals("right")) {
             eyeSelection = EYE_RIGHT;
         } else if (eye.equals("both")) {
@@ -454,7 +454,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
 
         // lens type
         int lensTypeSelection = LENS_TYPE_MYOPIA;
-        String lensType = data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.LENS_TYPE));
+        String lensType = data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.LENS_TYPE));
         if (lensType.equals("astigmatism")) {
             lensTypeSelection = LENS_TYPE_ASTIGMATISM;
         } else if (lensType.equals("multifocal")) {
@@ -465,23 +465,23 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         mSpnType.setSelection(lensTypeSelection);
         togglePrescriptionFields(lensTypeSelection);
 
-        mEdtSphere.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.SPHERE)));
-        mEdtBaseCurve.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.BASE_CURVE)));
-        mEdtDiameter.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.DIAMETER)));
-        mEdtCylinder.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.CYLINDER)));
-        mEdtAxis.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.AXIS)));
-        mEdtAdd.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.ADD_POWER)));
+        mEdtSphere.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.SPHERE)));
+        mEdtBaseCurve.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.BASE_CURVE)));
+        mEdtDiameter.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.DIAMETER)));
+        mEdtCylinder.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.CYLINDER)));
+        mEdtAxis.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.AXIS)));
+        mEdtAdd.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.ADD_POWER)));
         // get formatted expiration date
-        mExpirationDate = data.getLong(data.getColumnIndexOrThrow(LensLogContract.Packs.EXPIRATION_DATE));
+        mExpirationDate = data.getLong(data.getColumnIndexOrThrow(LensLogContract.Packages.EXPIRATION_DATE));
         if (mExpirationDate != 0) {
             mEdtExpiration.setText(DateUtils.formatDateTime(getActivity(), mExpirationDate, mDateBitmask));
         }
         // get formatted purchased date
-        mPurchasedDate = data.getLong(data.getColumnIndexOrThrow(LensLogContract.Packs.PURCHASED_DATE));
+        mPurchasedDate = data.getLong(data.getColumnIndexOrThrow(LensLogContract.Packages.PURCHASED_DATE));
         if (mPurchasedDate != 0) {
             mEdtPurchased.setText(DateUtils.formatDateTime(getActivity(), mPurchasedDate, mDateBitmask));
         }
-        mEdtShop.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packs.SHOP)));
+        mEdtShop.setText(data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.SHOP)));
     }
 
     @Override

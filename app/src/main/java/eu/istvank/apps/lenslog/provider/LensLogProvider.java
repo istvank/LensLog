@@ -42,8 +42,8 @@ public class LensLogProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
-    public static final int PACKS = 100;
-    public static final int PACKS_ID = 101;
+    public static final int PACKAGES = 100;
+    public static final int PACKAGES_ID = 101;
 
     public static final int LENSES = 200;
     public static final int LENSES_ID = 201;
@@ -59,8 +59,8 @@ public class LensLogProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = LensLogContract.CONTENT_AUTHORITY;
 
-        matcher.addURI(authority, "packs", PACKS);
-        matcher.addURI(authority, "packs/*", PACKS_ID);
+        matcher.addURI(authority, "packages", PACKAGES);
+        matcher.addURI(authority, "packages/*", PACKAGES_ID);
 
         matcher.addURI(authority, "lenses", LENSES);
         matcher.addURI(authority, "lenses/*", LENSES_ID);
@@ -90,10 +90,10 @@ public class LensLogProvider extends ContentProvider {
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case PACKS:
-                return Packs.CONTENT_TYPE;
-            case PACKS_ID:
-                return Packs.CONTENT_ITEM_TYPE;
+            case PACKAGES:
+                return Packages.CONTENT_TYPE;
+            case PACKAGES_ID:
+                return Packages.CONTENT_ITEM_TYPE;
             case LENSES:
                 return Lenses.CONTENT_TYPE;
             case LENSES_ID:
@@ -138,10 +138,10 @@ public class LensLogProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case PACKS: {
-                db.insertOrThrow(Tables.PACKS, null, values);
+            case PACKAGES: {
+                db.insertOrThrow(Tables.PACKAGES, null, values);
                 notifyChange(uri);
-                return Packs.buildPackUri(values.getAsString(Packs._ID));
+                return Packages.buildPackageUri(values.getAsString(Packages._ID));
             }
             case LENSES: {
                 db.insertOrThrow(Tables.LENSES, null, values);
@@ -210,12 +210,12 @@ public class LensLogProvider extends ContentProvider {
         final SelectionBuilder builder = new SelectionBuilder();
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case PACKS: {
-                return builder.table(Tables.PACKS);
+            case PACKAGES: {
+                return builder.table(Tables.PACKAGES);
             }
-            case PACKS_ID: {
-                final String packId = Packs.getPackId(uri);
-                return builder.table(Tables.PACKS).where(Packs._ID + "=?", packId);
+            case PACKAGES_ID: {
+                final String packageId = Packages.getPackageId(uri);
+                return builder.table(Tables.PACKAGES).where(Packages._ID + "=?", packageId);
             }
             case LENSES: {
                 return builder.table(Tables.LENSES);

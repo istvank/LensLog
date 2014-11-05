@@ -53,7 +53,7 @@ import hirondelle.date4j.DateTime;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LensesFragment.OnPackSelectedListener, FragmentManager.OnBackStackChangedListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LensesFragment.OnPackageSelectedListener, FragmentManager.OnBackStackChangedListener {
 
     public static final String TAG = "MainActivity";
 
@@ -318,10 +318,10 @@ public class MainActivity extends ActionBarActivity
      */
 
     @Override
-    public void onPackSelected(Uri packUri) {
-        //TODO: show PackDetailsFragment not the edit one
+    public void onPackageSelected(Uri packageUri) {
+        //TODO: show PackageDetailsFragment not the edit one
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, EditLensFragment.newInstance(packUri))
+                .replace(R.id.container, EditLensFragment.newInstance(packageUri))
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();

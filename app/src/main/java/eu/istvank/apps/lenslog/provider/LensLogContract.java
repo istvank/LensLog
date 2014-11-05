@@ -32,9 +32,11 @@ public class LensLogContract {
      */
     public static final String QUERY_PARAMETER_DISTINCT = "distinct";
 
-    public interface PacksColumns {
+    public interface PackagesColumns {
         String EYE = "eye";
         String LENS_TYPE = "lens_type";
+        String CONTENT = "content";
+        String REMAINING = "remaining";
         String SPHERE = "sphere";
         String BASE_CURVE = "base_curve";
         String DIAMETER = "diameter";
@@ -49,7 +51,7 @@ public class LensLogContract {
     }
 
     public interface LensesColumns {
-        String PACK_ID = "pack_id";
+        String PACKAGE_ID = "package_id";
         String TRASH = "trash";
     }
 
@@ -62,35 +64,35 @@ public class LensLogContract {
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-    public static final String PATH_PACKS = "packs";
+    public static final String PATH_PACKAGES = "packages";
     public static final String PATH_LENSES = "lenses";
     private static final String PATH_DAYSWORN = "daysworn";
 
     public static final String[] TOP_LEVEL_PATHS = {
-            PATH_PACKS,
+            PATH_PACKAGES,
             PATH_LENSES,
             PATH_DAYSWORN
     };
 
-    public static class Packs implements BaseColumns, PacksColumns {
+    public static class Packages implements BaseColumns, PackagesColumns {
         public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PACKS).build();
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PACKAGES).build();
 
         public static final String CONTENT_TYPE =
-                "vnd.android.cursor.dir/vnd.lenslog.packs";
+                "vnd.android.cursor.dir/vnd.lenslog.packages";
         public static final String CONTENT_ITEM_TYPE =
-                "vnd.android.cursor.item/vnd.lenslog.packs";
+                "vnd.android.cursor.item/vnd.lenslog.packages";
 
         /** Default "ORDER BY" clause. */
         public static final String DEFAULT_SORT = BaseColumns._ID + " DESC, ";
 
         /** Build {@link Uri} for requested {@link #_ID}. */
-        public static Uri buildPackUri(String packId) {
-            return CONTENT_URI.buildUpon().appendPath(packId).build();
+        public static Uri buildPackageUri(String packageId) {
+            return CONTENT_URI.buildUpon().appendPath(packageId).build();
         }
 
-        /** Read {@link #_ID} from {@link Packs} {@link Uri}. */
-        public static String getPackId(Uri uri) {
+        /** Read {@link #_ID} from {@link Packages} {@link Uri}. */
+        public static String getPackageId(Uri uri) {
             return uri.getPathSegments().get(1);
         }
     }

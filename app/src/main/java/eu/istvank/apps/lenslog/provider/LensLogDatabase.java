@@ -37,7 +37,7 @@ public class LensLogDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "lenslog.db";
 
-    private static final int VERSION_1 = 1; // app version 0.1
+    private static final int VERSION_1 = 1; // app version 0.1.0
     private static final int CUR_DATABASE_VERSION = VERSION_1;
 
     private final Context mContext;
@@ -46,7 +46,7 @@ public class LensLogDatabase extends SQLiteOpenHelper {
      * An interface containing all the tables.
      */
     interface Tables {
-        String PACKS = "packs";
+        String PACKAGES = "packages";
         String LENSES = "lenses";
         String DAYSWORN = "daysworn";
     }
@@ -58,25 +58,27 @@ public class LensLogDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + Tables.PACKS + " ("
+        db.execSQL("CREATE TABLE " + Tables.PACKAGES + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + PacksColumns.EYE + " TEXT NOT NULL,"
-                + PacksColumns.LENS_TYPE + " TEXT NOT NULL,"
-                + PacksColumns.SPHERE + " TEXT,"
-                + PacksColumns.BASE_CURVE + " TEXT,"
-                + PacksColumns.DIAMETER + " TEXT,"
-                + PacksColumns.CYLINDER + " TEXT,"
-                + PacksColumns.AXIS + " TEXT,"
-                + PacksColumns.ADD_POWER + " TEXT,"
-                + PacksColumns.EXPIRATION_DATE + " INTEGER,"
-                + PacksColumns.PURCHASED_DATE + " INTEGER,"
-                + PacksColumns.NAME + " TEXT,"
-                + PacksColumns.BRAND + " TEXT,"
-                + PacksColumns.SHOP + " TEXT)");
+                + PackagesColumns.EYE + " TEXT NOT NULL,"
+                + PackagesColumns.LENS_TYPE + " TEXT NOT NULL,"
+                + PackagesColumns.CONTENT + " INTEGER,"
+                + PackagesColumns.REMAINING + " INTEGER,"
+                + PackagesColumns.SPHERE + " TEXT,"
+                + PackagesColumns.BASE_CURVE + " TEXT,"
+                + PackagesColumns.DIAMETER + " TEXT,"
+                + PackagesColumns.CYLINDER + " TEXT,"
+                + PackagesColumns.AXIS + " TEXT,"
+                + PackagesColumns.ADD_POWER + " TEXT,"
+                + PackagesColumns.EXPIRATION_DATE + " INTEGER,"
+                + PackagesColumns.PURCHASED_DATE + " INTEGER,"
+                + PackagesColumns.NAME + " TEXT,"
+                + PackagesColumns.BRAND + " TEXT,"
+                + PackagesColumns.SHOP + " TEXT)");
 
         db.execSQL("CREATE TABLE " + Tables.LENSES + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + LensesColumns.PACK_ID + " INTEGER NOT NULL,"
+                + LensesColumns.PACKAGE_ID + " INTEGER NOT NULL,"
                 + LensesColumns.TRASH + " INTEGER NOT NULL)");
 
         db.execSQL("CREATE TABLE " + Tables.DAYSWORN + " ("
@@ -95,7 +97,7 @@ public class LensLogDatabase extends SQLiteOpenHelper {
         if (version != CUR_DATABASE_VERSION) {
 
             // list here all tables to drop
-            db.execSQL("DROP TABLE IF EXISTS " + Tables.PACKS);
+            db.execSQL("DROP TABLE IF EXISTS " + Tables.PACKAGES);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.LENSES);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.DAYSWORN);
 

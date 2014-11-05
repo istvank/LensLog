@@ -28,22 +28,22 @@ import eu.istvank.apps.lenslog.R;
 import eu.istvank.apps.lenslog.provider.LensLogContract;
 
 /**
- * The LensesFragment shows a list of lens packs. It shows an "add" button to allow adding more
- * lens packs.
+ * The LensesFragment shows a list of lens packages. It shows an "add" button to allow adding more
+ * lens packages.
  *
  * <p />
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p />
- * Activities containing this fragment MUST implement the {@link eu.istvank.apps.lenslog.fragments.LensesFragment.OnPackSelectedListener}
+ * Activities containing this fragment MUST implement the {@link eu.istvank.apps.lenslog.fragments.LensesFragment.OnPackageSelectedListener}
  * interface.
  */
 public class LensesFragment extends Fragment implements AbsListView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
-     * The listener for pack selection events.
+     * The listener for package selection events.
      */
-    private OnPackSelectedListener mListener;
+    private OnPackageSelectedListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -94,7 +94,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.onPackSelected(null);
+                mListener.onPackageSelected(null);
             }
         });
 
@@ -103,7 +103,7 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
                         getActivity(),                          // Current context
                         R.layout.lenses_list_item,    // Layout for a single row
                         null,                                   // No Cursor yet
-                        new String[] {LensLogContract.Packs.NAME, LensLogContract.Packs.BRAND, LensLogContract.Packs.EYE},   // Cursor columns to use
+                        new String[] {LensLogContract.Packages.NAME, LensLogContract.Packages.BRAND, LensLogContract.Packages.EYE},   // Cursor columns to use
                         new int[] {R.id.lens_name, R.id.brand, R.id.eye},         // Layout fields to use
                         0                                       // No flags
                 );
@@ -148,9 +148,9 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch(item.getItemId()) {
             case R.id.delete:
-                // remove lens pack
-                Uri packUri = ContentUris.withAppendedId(LensLogContract.Packs.CONTENT_URI, info.id);
-                getActivity().getContentResolver().delete(packUri, null, null);
+                // remove lens package
+                Uri packageUri = ContentUris.withAppendedId(LensLogContract.Packages.CONTENT_URI, info.id);
+                getActivity().getContentResolver().delete(packageUri, null, null);
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -161,10 +161,10 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnPackSelectedListener) activity;
+            mListener = (OnPackageSelectedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                + " must implement OnPackSelectedListener");
+                + " must implement OnPackageSelectedListener");
         }
     }
 
@@ -178,8 +178,8 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (null != mListener) {
-            Uri packUri = ContentUris.withAppendedId(LensLogContract.Packs.CONTENT_URI, id);
-            mListener.onPackSelected(packUri);
+            Uri packageUri = ContentUris.withAppendedId(LensLogContract.Packages.CONTENT_URI, id);
+            mListener.onPackageSelected(packageUri);
         }
     }
 
@@ -202,8 +202,8 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
     * to the activity and potentially other fragments contained in that
     * activity.
     */
-    public interface OnPackSelectedListener {
-        public void onPackSelected(Uri packUri);
+    public interface OnPackageSelectedListener {
+        public void onPackageSelected(Uri packageUri);
     }
 
     /**
@@ -219,14 +219,14 @@ public class LensesFragment extends Fragment implements AbsListView.OnItemClickL
             case LENSES_LOADER:
                 // Returns a new CursorLoader
                 String[] projection = new String[] {
-                        LensLogContract.Packs._ID,
-                        LensLogContract.Packs.NAME,
-                        LensLogContract.Packs.BRAND,
-                        LensLogContract.Packs.EYE
+                        LensLogContract.Packages._ID,
+                        LensLogContract.Packages.NAME,
+                        LensLogContract.Packages.BRAND,
+                        LensLogContract.Packages.EYE
                 };
                 return new CursorLoader(
                         getActivity(),  // Parent activity context
-                        LensLogContract.Packs.CONTENT_URI,        // Table to query
+                        LensLogContract.Packages.CONTENT_URI,        // Table to query
                         projection,     // Projection to return
                         null,           // No selection clause
                         null,           // No selection arguments
