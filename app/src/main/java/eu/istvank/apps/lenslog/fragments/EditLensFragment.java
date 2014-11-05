@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import eu.istvank.apps.lenslog.R;
@@ -50,6 +51,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     private EditText mEdtName;
     private EditText mEdtBrand;
     private Spinner mSpnEye;
+    private Spinner mSpnContent;
+    private Spinner mSpnRemaining;
     private EditText mEdtExpiration;
     private EditText mEdtPurchased;
     private EditText mEdtShop;
@@ -150,6 +153,26 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         // Apply the adapter to the spinner
         mSpnEye.setAdapter(adapterEye);
 
+        // Content spinner
+        ArrayList<String> countContent = new ArrayList<String>();
+        for (int i = 1; i <= 100; i++) {
+            countContent.add(Integer.toString(i));
+        }
+        ArrayAdapter<String> adapterContent = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_item, countContent);
+        mSpnContent = (Spinner) view.findViewById(R.id.newlens_spn_content);
+        mSpnContent.setAdapter(adapterContent);
+
+        // Remaining spinner
+        ArrayList<String> countRemaining = new ArrayList<String>();
+        for (int i = 0; i <= 100; i++) {
+            countRemaining.add(Integer.toString(i));
+        }
+        ArrayAdapter<String> adapterRemaining = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_item, countRemaining);
+        mSpnRemaining = (Spinner) view.findViewById(R.id.newlens_spn_remaining);
+        mSpnRemaining.setAdapter(adapterRemaining);
+
         // Lens type spinner
         mSpnType = (Spinner) view.findViewById(R.id.newlens_spn_type);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -221,6 +244,9 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             * to onCreateLoader().
             */
             getLoaderManager().initLoader(URL_LOADER, null, this);
+        } else {
+            // set remaining lenses to 1 (which coincidentally has index 1)
+            mSpnRemaining.setSelection(1);
         }
 
         return view;
@@ -235,8 +261,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_save) {
             ContentValues values = new ContentValues();
-            values.put(LensLogContract.PackagesColumns.NAME, mEdtName.getText().toString());
-            values.put(LensLogContract.PackagesColumns.BRAND, mEdtBrand.getText().toString());
+            values.put(LensLogContract.Packages.NAME, mEdtName.getText().toString());
+            values.put(LensLogContract.Packages.BRAND, mEdtBrand.getText().toString());
 
             // eye
             int eyePos = mSpnEye.getSelectedItemPosition();
@@ -251,7 +277,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                 default:
                     eye = "both";
             }
-            values.put(LensLogContract.PackagesColumns.EYE, eye);
+            values.put(LensLogContract.Packages.EYE, eye);
 
             // lens type
             int lensTypePos = mSpnType.getSelectedItemPosition();
@@ -269,17 +295,20 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                 default:
                     lensType = "myopia";
             }
-            values.put(LensLogContract.PackagesColumns.LENS_TYPE, lensType);
+            values.put(LensLogContract.Packages.LENS_TYPE, lensType);
 
-            values.put(LensLogContract.PackagesColumns.SPHERE, mEdtSphere.getText().toString());
-            values.put(LensLogContract.PackagesColumns.BASE_CURVE, mEdtBaseCurve.getText().toString());
-            values.put(LensLogContract.PackagesColumns.DIAMETER, mEdtDiameter.getText().toString());
-            values.put(LensLogContract.PackagesColumns.CYLINDER, mEdtCylinder.getText().toString());
-            values.put(LensLogContract.PackagesColumns.AXIS, mEdtAxis.getText().toString());
-            values.put(LensLogContract.PackagesColumns.ADD_POWER, mEdtAdd.getText().toString());
-            values.put(LensLogContract.PackagesColumns.EXPIRATION_DATE, mExpirationDate);
-            values.put(LensLogContract.PackagesColumns.PURCHASED_DATE, mPurchasedDate);
-            values.put(LensLogContract.PackagesColumns.SHOP, mEdtShop.getText().toString());
+            // at content spinner, we start with 1
+            values.put(LensLogContract.Packages.CONTENT, mSpnContent.getSelectedItemPosition() + 1);
+            values.put(LensLogContract.Packages.REMAINING, mSpnRemaining.getSelectedItemPosition());
+            values.put(LensLogContract.Packages.SPHERE, mEdtSphere.getText().toString());
+            values.put(LensLogContract.Packages.BASE_CURVE, mEdtBaseCurve.getText().toString());
+            values.put(LensLogContract.Packages.DIAMETER, mEdtDiameter.getText().toString());
+            values.put(LensLogContract.Packages.CYLINDER, mEdtCylinder.getText().toString());
+            values.put(LensLogContract.Packages.AXIS, mEdtAxis.getText().toString());
+            values.put(LensLogContract.Packages.ADD_POWER, mEdtAdd.getText().toString());
+            values.put(LensLogContract.Packages.EXPIRATION_DATE, mExpirationDate);
+            values.put(LensLogContract.Packages.PURCHASED_DATE, mPurchasedDate);
+            values.put(LensLogContract.Packages.SHOP, mEdtShop.getText().toString());
 
             if (mLensUri != null) {
                 // change existing lens package
@@ -294,17 +323,6 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            //mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
@@ -411,6 +429,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                         LensLogContract.Packages.NAME,
                         LensLogContract.Packages.BRAND,
                         LensLogContract.Packages.EYE,
+                        LensLogContract.Packages.CONTENT,
+                        LensLogContract.Packages.REMAINING,
                         LensLogContract.Packages.LENS_TYPE,
                         LensLogContract.Packages.SPHERE,
                         LensLogContract.Packages.BASE_CURVE,
@@ -451,6 +471,12 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             eyeSelection = EYE_BOTH;
         }
         mSpnEye.setSelection(eyeSelection);
+
+        // content and remaining
+        int content = data.getInt(data.getColumnIndexOrThrow(LensLogContract.Packages.CONTENT));
+        mSpnContent.setSelection(content - 1);
+        int remaining = data.getInt(data.getColumnIndexOrThrow(LensLogContract.Packages.REMAINING));
+        mSpnRemaining.setSelection(remaining);
 
         // lens type
         int lensTypeSelection = LENS_TYPE_MYOPIA;

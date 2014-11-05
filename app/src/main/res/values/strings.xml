@@ -59,13 +59,16 @@
     <!-- NewLensFragment -->
     <string name="label_name">Name</string>
     <string name="label_brand">Brand</string>
-    <string name="label_eye">Eye</string>
 
+    <string name="label_eye">Eye</string>
     <string-array name="eye_array">
         <item>Left</item>
         <item>Right</item>
         <item>Both</item>
     </string-array>
+
+    <string name="label_content">Number of lenses</string>
+    <string name="label_remaining">Remaining lenses</string>
 
     <string-array name="lens_type_array">
         <item>Myopia/Hypermetropia</item>

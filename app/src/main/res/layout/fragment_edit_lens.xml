@@ -47,6 +47,28 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/label_content" />
+
+        <Spinner
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/newlens_spn_content"
+            android:layout_gravity="left"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_remaining" />
+
+        <Spinner
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/newlens_spn_remaining"
+            android:layout_gravity="left" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/label_expiration" />
 
         <EditText
