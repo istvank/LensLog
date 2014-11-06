@@ -34,6 +34,7 @@ import eu.istvank.apps.lenslog.receivers.NotifyAlarmReceiver;
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String KEY_PREF_NOTIFY_DAILY = "pref_notify_daily";
+    public static final String KEY_PREF_NOTIFICATION_TIME = "pref_notification_time";
 
     NotifyAlarmReceiver alarm = new NotifyAlarmReceiver();
 
@@ -71,8 +72,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                                           String key) {
-        if (key.equals(KEY_PREF_NOTIFY_DAILY)) {
-            boolean notify = sharedPreferences.getBoolean(key, false);
+        if (key.equals(KEY_PREF_NOTIFY_DAILY) || key.equals(KEY_PREF_NOTIFICATION_TIME)) {
+            boolean notify = sharedPreferences.getBoolean(KEY_PREF_NOTIFY_DAILY, false);
             if (notify) {
                 alarm.setAlarm(getActivity());
             } else {

@@ -23,5 +23,11 @@
         <CheckBoxPreference android:key="pref_notify_daily" android:title="@string/pref_notify" android:summary="@string/pref_notify_summ"
             android:defaultValue="false" />
 
+        <eu.istvank.apps.lenslog.util.TimePreference
+            android:key="pref_notification_time"
+            android:title="@string/pref_notification_time"
+            android:summary="@string/pref_notification_time_summ"
+            android:defaultValue="50400000" />
+
     </PreferenceCategory>
 </PreferenceScreen>

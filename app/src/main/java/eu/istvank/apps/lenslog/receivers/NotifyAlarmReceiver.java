@@ -22,12 +22,15 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
 import java.util.Calendar;
 
+import eu.istvank.apps.lenslog.fragments.SettingsFragment;
 import eu.istvank.apps.lenslog.services.NotifySchedulingService;
 
 /**
@@ -60,17 +63,20 @@ public class NotifyAlarmReceiver extends WakefulBroadcastReceiver {
         Intent intent = new Intent(context, NotifyAlarmReceiver.class);
         alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
+        // get notification time from preferences
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        long notificationTime = sp.getLong(SettingsFragment.KEY_PREF_NOTIFICATION_TIME, 50400000);
+
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        // Set the alarm's trigger time to 8:30 a.m.
-        //calendar.set(Calendar.HOUR_OF_DAY, 16);
-        //calendar.set(Calendar.MINUTE, 57);
+        //TODO: if the time has passed already, set it to tomorrow.
+        calendar.setTimeInMillis(notificationTime);
+
+        // The following line is for debug only
+        //alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
 
         // Set the alarm to fire according to the device's clock, and to repeat once a day.
-        //TODO: Replace the line plus the annotation after debug
-        alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
-        //alarmMgr.setInexactRepeating(AlarmManager.RTC,
-        //        calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
+        alarmMgr.setInexactRepeating(AlarmManager.RTC,
+                notificationTime, AlarmManager.INTERVAL_DAY, alarmIntent);
 
         // Enable {@code SampleBootReceiver} to automatically restart the alarm when the
         // device is rebooted.

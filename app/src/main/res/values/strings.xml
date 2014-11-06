@@ -28,6 +28,8 @@
     <string name="pref_category_notification">Notifications</string>
     <string name="pref_notify">Daily Notification</string>
     <string name="pref_notify_summ">Do you want to be asked every day whether you are wearing your lenses?</string>
+    <string name="pref_notification_time">Notification Time</string>
+    <string name="pref_notification_time_summ">When do you want to be notified daily?</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="notification_question">Do you wear your lenses today?</string>
     <string name="action_new_lens">Add new lens</string>
@@ -36,6 +38,8 @@
     <string name="menu_delete">Delete</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="set">Set</string>
+    <string name="cancel">Cancel</string>
 
     <!-- About -->
     <string name="about_body"><![CDATA[
