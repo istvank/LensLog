@@ -73,6 +73,13 @@
 
     <string name="label_content">Number of lenses</string>
     <string name="label_remaining">Remaining lenses</string>
+    <string name="label_replacement_schedule">Replacement schedule</string>
+
+    <string-array name="replacement_period_array">
+        <item>Daily</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
+    </string-array>
 
     <string-array name="lens_type_array">
         <item>Myopia/Hypermetropia</item>

@@ -44,40 +44,66 @@
             android:id="@+id/newlens_spn_eye"
             android:layout_gravity="left"/>
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left" >
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/label_content" />
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/label_remaining" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left" >
+
+            <Spinner
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/newlens_spn_content"
+                android:layout_gravity="left"/>
+
+            <Spinner
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/newlens_spn_remaining"
+                android:layout_gravity="left" />
+
+        </LinearLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_content" />
+            android:text="@string/label_replacement_schedule" />
 
-        <Spinner
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:id="@+id/newlens_spn_content"
-            android:layout_gravity="left"/>
+            android:layout_gravity="left" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_remaining" />
+            <Spinner
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/newlens_spn_replacement_value" />
 
-        <Spinner
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/newlens_spn_remaining"
-            android:layout_gravity="left" />
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/newlens_spn_replacement_period" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_expiration" />
-
-        <EditText
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:inputType="date"
-            android:id="@+id/newlens_edt_expiration"
-            android:layout_gravity="left"
-            android:focusable="false" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -89,6 +115,19 @@
             android:layout_height="wrap_content"
             android:inputType="date"
             android:id="@+id/newlens_edt_purchased"
+            android:layout_gravity="left"
+            android:focusable="false" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_expiration" />
+
+        <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:id="@+id/newlens_edt_expiration"
             android:layout_gravity="left"
             android:focusable="false" />
 

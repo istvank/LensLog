@@ -37,6 +37,8 @@ public class LensLogContract {
         String LENS_TYPE = "lens_type";
         String CONTENT = "content";
         String REMAINING = "remaining";
+        String REPLACEMENT_VALUE = "replacement_value";
+        String REPLACEMENT_PERIOD = "replacement_period";
         String SPHERE = "sphere";
         String BASE_CURVE = "base_curve";
         String DIAMETER = "diameter";

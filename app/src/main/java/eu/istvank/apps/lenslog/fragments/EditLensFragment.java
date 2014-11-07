@@ -53,6 +53,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     private Spinner mSpnEye;
     private Spinner mSpnContent;
     private Spinner mSpnRemaining;
+    private Spinner mSpnReplacementValue;
+    private Spinner mSpnReplacementPeriod;
     private EditText mEdtExpiration;
     private EditText mEdtPurchased;
     private EditText mEdtShop;
@@ -97,6 +99,11 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     public static final int LENS_TYPE_ASTIGMATISM = 1;
     public static final int LENS_TYPE_MULTIFOCAL = 2;
     public static final int LENS_TYPE_DECORATIVE = 3;
+
+    // the periods
+    public static final int PERIOD_DAILY = 0;
+    public static final int PERIOD_MONTHLY = 1;
+    public static final int PERIOD_YEARLY = 2;
 
     /**
      * Identifies a particular Loader being used in this component
@@ -147,7 +154,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         mSpnEye = (Spinner) view.findViewById(R.id.newlens_spn_eye);
         // Create an ArrayAdapter using the string array and a default spinner layout
         final ArrayAdapter<CharSequence> adapterEye = ArrayAdapter.createFromResource(getActivity(),
-                R.array.eye_array, android.R.layout.simple_spinner_item);
+                R.array.eye_array, android.R.layout.simple_spinner_dropdown_item);
         // Specify the layout to use when the list of choices appears
         adapterEye.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
@@ -159,7 +166,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             countContent.add(Integer.toString(i));
         }
         ArrayAdapter<String> adapterContent = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, countContent);
+                android.R.layout.simple_spinner_dropdown_item, countContent);
         mSpnContent = (Spinner) view.findViewById(R.id.newlens_spn_content);
         mSpnContent.setAdapter(adapterContent);
 
@@ -169,15 +176,31 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             countRemaining.add(Integer.toString(i));
         }
         ArrayAdapter<String> adapterRemaining = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, countRemaining);
+                android.R.layout.simple_spinner_dropdown_item, countRemaining);
         mSpnRemaining = (Spinner) view.findViewById(R.id.newlens_spn_remaining);
         mSpnRemaining.setAdapter(adapterRemaining);
+
+        // Replacement value spinner
+        // reuse countContent's ArrayList as it goes from 1 to 100
+        ArrayAdapter<String> adapterReplacementValue = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_dropdown_item, countContent);
+        mSpnReplacementValue = (Spinner) view.findViewById(R.id.newlens_spn_replacement_value);
+        mSpnReplacementValue.setAdapter(adapterReplacementValue);
+
+        // Replacement period spinner
+        mSpnReplacementPeriod = (Spinner) view.findViewById(R.id.newlens_spn_replacement_period);
+        ArrayAdapter<CharSequence> adapterReplacementPeriod = ArrayAdapter.createFromResource(getActivity(),
+                R.array.replacement_period_array, android.R.layout.simple_spinner_dropdown_item);
+        // Specify the layout to use when the list of choices appears
+        adapterReplacementPeriod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mSpnReplacementPeriod.setAdapter(adapterReplacementPeriod);
 
         // Lens type spinner
         mSpnType = (Spinner) view.findViewById(R.id.newlens_spn_type);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapterType = ArrayAdapter.createFromResource(getActivity(),
-                R.array.lens_type_array, android.R.layout.simple_spinner_item);
+                R.array.lens_type_array, android.R.layout.simple_spinner_dropdown_item);
         // Specify the layout to use when the list of choices appears
         adapterType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
@@ -247,6 +270,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         } else {
             // set remaining lenses to 1 (which coincidentally has index 1)
             mSpnRemaining.setSelection(1);
+            // set replacement period to monthly
+            mSpnReplacementPeriod.setSelection(PERIOD_MONTHLY);
         }
 
         return view;
@@ -300,6 +325,23 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             // at content spinner, we start with 1
             values.put(LensLogContract.Packages.CONTENT, mSpnContent.getSelectedItemPosition() + 1);
             values.put(LensLogContract.Packages.REMAINING, mSpnRemaining.getSelectedItemPosition());
+            values.put(LensLogContract.Packages.REPLACEMENT_VALUE, mSpnReplacementValue.getSelectedItemPosition() + 1);
+
+            // replacement period
+            int replacementPeriodPos = mSpnReplacementPeriod.getSelectedItemPosition();
+            String replacementPeriod;
+            switch (replacementPeriodPos) {
+                case PERIOD_DAILY:
+                    replacementPeriod = "daily";
+                    break;
+                case PERIOD_YEARLY:
+                    replacementPeriod = "yearly";
+                    break;
+                default:
+                    replacementPeriod = "monthly";
+            }
+            values.put(LensLogContract.Packages.REPLACEMENT_PERIOD, replacementPeriod);
+
             values.put(LensLogContract.Packages.SPHERE, mEdtSphere.getText().toString());
             values.put(LensLogContract.Packages.BASE_CURVE, mEdtBaseCurve.getText().toString());
             values.put(LensLogContract.Packages.DIAMETER, mEdtDiameter.getText().toString());
@@ -431,6 +473,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                         LensLogContract.Packages.EYE,
                         LensLogContract.Packages.CONTENT,
                         LensLogContract.Packages.REMAINING,
+                        LensLogContract.Packages.REPLACEMENT_VALUE,
+                        LensLogContract.Packages.REPLACEMENT_PERIOD,
                         LensLogContract.Packages.LENS_TYPE,
                         LensLogContract.Packages.SPHERE,
                         LensLogContract.Packages.BASE_CURVE,
@@ -477,6 +521,18 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         mSpnContent.setSelection(content - 1);
         int remaining = data.getInt(data.getColumnIndexOrThrow(LensLogContract.Packages.REMAINING));
         mSpnRemaining.setSelection(remaining);
+
+        // replacement schedule
+        int replacementValue = data.getInt(data.getColumnIndexOrThrow(LensLogContract.Packages.REPLACEMENT_VALUE));
+        mSpnReplacementValue.setSelection(replacementValue - 1);
+        int replacementPeriodSelection = PERIOD_MONTHLY;
+        String replacementPeriod = data.getString(data.getColumnIndexOrThrow(LensLogContract.Packages.REPLACEMENT_PERIOD));
+        if (replacementPeriod.equals("daily")) {
+            replacementPeriodSelection = PERIOD_DAILY;
+        } else if (replacementPeriod.equals("yearly")) {
+            replacementPeriodSelection = PERIOD_YEARLY;
+        }
+        mSpnReplacementPeriod.setSelection(replacementPeriodSelection);
 
         // lens type
         int lensTypeSelection = LENS_TYPE_MYOPIA;

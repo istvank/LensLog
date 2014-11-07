@@ -64,6 +64,8 @@ public class LensLogDatabase extends SQLiteOpenHelper {
                 + PackagesColumns.LENS_TYPE + " TEXT NOT NULL,"
                 + PackagesColumns.CONTENT + " INTEGER,"
                 + PackagesColumns.REMAINING + " INTEGER,"
+                + PackagesColumns.REPLACEMENT_VALUE + " INTEGER,"
+                + PackagesColumns.REPLACEMENT_PERIOD + " TEXT,"
                 + PackagesColumns.SPHERE + " TEXT,"
                 + PackagesColumns.BASE_CURVE + " TEXT,"
                 + PackagesColumns.DIAMETER + " TEXT,"
