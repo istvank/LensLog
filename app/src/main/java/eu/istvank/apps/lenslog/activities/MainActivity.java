@@ -237,7 +237,9 @@ public class MainActivity extends ActionBarActivity
         String whereArgsDefaults = LensLogContract.Packages.DEFAULT_LENS + " = 1";
         Cursor cursorDefaults = getContentResolver().query(LensLogContract.Packages.CONTENT_URI, projectionDefaults, whereArgsDefaults, null, null);
         int defaultLensLeft = 0;
+        int remainingLeft = 0;
         int defaultLensRight = 0;
+        int remainingRight = 0;
         while (cursorDefaults.moveToNext()) {
             int defaultLens = cursorDefaults.getInt(cursorDefaults.getColumnIndexOrThrow(LensLogContract.Packages._ID));
             String eye = cursorDefaults.getString(cursorDefaults.getColumnIndexOrThrow(LensLogContract.Packages.EYE));
@@ -248,10 +250,16 @@ public class MainActivity extends ActionBarActivity
             // package has only been opened recently.
             if (content == remaining) {
                 // decrease remaining by two if eye is both, otherwise by one
-                if (eye.equals("both")) {
+                if (eye.equals("left")) {
+                    remaining --;
+                    remainingLeft = remaining;
+                } else if (eye.equals("right")) {
+                    remaining --;
+                    remainingRight = remaining;
+                } else if (eye.equals("both")) {
                     remaining -= 2;
-                } else {
-                    remaining--;
+                    remainingLeft = remaining;
+                    remainingRight = remaining;
                 }
                 ContentValues valuesRemaining = new ContentValues();
                 valuesRemaining.put(LensLogContract.Packages.REMAINING, remaining);
@@ -278,7 +286,9 @@ public class MainActivity extends ActionBarActivity
         ContentValues values = new ContentValues();
         values.put(LensLogContract.DaysWorn.WASWORN, worn);
         values.put(LensLogContract.DaysWorn.LEFT_PACKAGE_ID, defaultLensLeft);
+        values.put(LensLogContract.DaysWorn.LEFT_REMAINING, remainingLeft);
         values.put(LensLogContract.DaysWorn.RIGHT_PACKAGE_ID, defaultLensRight);
+        values.put(LensLogContract.DaysWorn.RIGHT_REMAINING, remainingRight);
         if (c != null && c.moveToFirst()) {
             // date exists so update
             getContentResolver().update(LensLogContract.DaysWorn.CONTENT_URI, values, whereArg, selectionArgs);

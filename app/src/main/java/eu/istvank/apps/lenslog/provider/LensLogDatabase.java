@@ -89,7 +89,9 @@ public class LensLogDatabase extends SQLiteOpenHelper {
                 + DaysWornColumns.DATETIME + " INTEGER NOT NULL,"
                 + DaysWornColumns.WASWORN + " INTEGER NOT NULL,"
                 + DaysWornColumns.LEFT_PACKAGE_ID + " INTEGER,"
-                + DaysWornColumns.RIGHT_PACKAGE_ID + " INTEGER)");
+                + DaysWornColumns.LEFT_REMAINING + " INTEGER,"
+                + DaysWornColumns.RIGHT_PACKAGE_ID + " INTEGER,"
+                + DaysWornColumns.RIGHT_REMAINING + " INTEGER)");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

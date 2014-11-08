@@ -62,7 +62,9 @@ public class LensLogContract {
         String DATETIME = "datetime";
         String WASWORN = "was_worn";
         String LEFT_PACKAGE_ID = "left_package_id";
+        String LEFT_REMAINING = "left_remaining";
         String RIGHT_PACKAGE_ID = "right_package_id";
+        String RIGHT_REMAINING = "right_remaining";
     }
 
     public static final String CONTENT_AUTHORITY = "eu.istvank.apps.lenslog";
