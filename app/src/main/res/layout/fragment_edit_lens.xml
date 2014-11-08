@@ -42,7 +42,13 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:id="@+id/newlens_spn_eye"
-            android:layout_gravity="left"/>
+            android:layout_gravity="left" />
+
+        <CheckBox
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/newlens_chk_default"
+            android:text="@string/label_default" />
 
         <LinearLayout
             android:orientation="horizontal"

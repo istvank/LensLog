@@ -23,6 +23,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -51,6 +53,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
     private EditText mEdtName;
     private EditText mEdtBrand;
     private Spinner mSpnEye;
+    private CheckBox mChkDefault;
     private Spinner mSpnContent;
     private Spinner mSpnRemaining;
     private Spinner mSpnReplacementValue;
@@ -160,6 +163,8 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         // Apply the adapter to the spinner
         mSpnEye.setAdapter(adapterEye);
 
+        mChkDefault = (CheckBox) view.findViewById(R.id.newlens_chk_default);
+
         // Content spinner
         ArrayList<String> countContent = new ArrayList<String>();
         for (int i = 1; i <= 100; i++) {
@@ -268,10 +273,13 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             */
             getLoaderManager().initLoader(URL_LOADER, null, this);
         } else {
+            // This is the place to set all defaults for new packages.
+
             // set remaining lenses to 1 (which coincidentally has index 1)
             mSpnRemaining.setSelection(1);
             // set replacement period to monthly
             mSpnReplacementPeriod.setSelection(PERIOD_MONTHLY);
+            //mChkDefault.setChecked(true);
         }
 
         return view;
@@ -303,6 +311,35 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                     eye = "both";
             }
             values.put(LensLogContract.Packages.EYE, eye);
+
+            // default
+            boolean isDefault = mChkDefault.isChecked();
+            values.put(LensLogContract.Packages.DEFAULT_LENS, isDefault);
+            if (isDefault) {
+                // check if there are other defaults currently
+                if (eye.equals("both")) {
+                    // easy case, deactivate all other defaults
+                    ContentValues valuesBoth = new ContentValues();
+                    valuesBoth.put(LensLogContract.Packages.DEFAULT_LENS, false);
+                    getActivity().getContentResolver().update(LensLogContract.Packages.CONTENT_URI, valuesBoth, LensLogContract.Packages.DEFAULT_LENS + " = 1", null);
+                } else {
+                    // check if the current default is "both". If yes, set it to the other eye only
+                    // and make this one the default for the current eye.
+                    String otherEye = (eye.equals("left")) ? "right" : "left";
+
+                    // first update the current "both" default to other eye
+                    ContentValues valuesOther = new ContentValues();
+                    valuesOther.put(LensLogContract.Packages.EYE, otherEye);
+                    String whereArgsOther = LensLogContract.Packages.DEFAULT_LENS + " = 1 AND " + LensLogContract.Packages.EYE + " = 'both'";
+                    getActivity().getContentResolver().update(LensLogContract.Packages.CONTENT_URI, valuesOther, whereArgsOther, null);
+
+                    // then deactivate current default for this eye
+                    ContentValues valuesEye = new ContentValues();
+                    valuesEye.put(LensLogContract.Packages.DEFAULT_LENS, false);
+                    String whereArgsEye = LensLogContract.Packages.DEFAULT_LENS + " = 1 AND " + LensLogContract.Packages.EYE + " = '" + eye + "'";
+                    getActivity().getContentResolver().update(LensLogContract.Packages.CONTENT_URI, valuesEye, whereArgsEye, null);
+                }
+            }
 
             // lens type
             int lensTypePos = mSpnType.getSelectedItemPosition();
@@ -471,6 +508,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
                         LensLogContract.Packages.NAME,
                         LensLogContract.Packages.BRAND,
                         LensLogContract.Packages.EYE,
+                        LensLogContract.Packages.DEFAULT_LENS,
                         LensLogContract.Packages.CONTENT,
                         LensLogContract.Packages.REMAINING,
                         LensLogContract.Packages.REPLACEMENT_VALUE,
@@ -515,6 +553,10 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
             eyeSelection = EYE_BOTH;
         }
         mSpnEye.setSelection(eyeSelection);
+
+        // default
+        boolean isDefault = data.getInt(data.getColumnIndexOrThrow(LensLogContract.Packages.DEFAULT_LENS)) != 0;
+        mChkDefault.setChecked(isDefault);
 
         // content and remaining
         int content = data.getInt(data.getColumnIndexOrThrow(LensLogContract.Packages.CONTENT));

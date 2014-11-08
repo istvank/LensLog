@@ -34,6 +34,7 @@ public class LensLogContract {
 
     public interface PackagesColumns {
         String EYE = "eye";
+        String DEFAULT_LENS = "default_lens";
         String LENS_TYPE = "lens_type";
         String CONTENT = "content";
         String REMAINING = "remaining";
@@ -60,6 +61,8 @@ public class LensLogContract {
     public interface DaysWornColumns {
         String DATETIME = "datetime";
         String WASWORN = "was_worn";
+        String LEFT_PACKAGE_ID = "left_package_id";
+        String RIGHT_PACKAGE_ID = "right_package_id";
     }
 
     public static final String CONTENT_AUTHORITY = "eu.istvank.apps.lenslog";

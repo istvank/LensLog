@@ -61,6 +61,7 @@ public class LensLogDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + Tables.PACKAGES + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + PackagesColumns.EYE + " TEXT NOT NULL,"
+                + PackagesColumns.DEFAULT_LENS + " INTEGER,"
                 + PackagesColumns.LENS_TYPE + " TEXT NOT NULL,"
                 + PackagesColumns.CONTENT + " INTEGER,"
                 + PackagesColumns.REMAINING + " INTEGER,"
@@ -86,7 +87,9 @@ public class LensLogDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + Tables.DAYSWORN + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + DaysWornColumns.DATETIME + " INTEGER NOT NULL,"
-                + DaysWornColumns.WASWORN + " INTEGER NOT NULL)");
+                + DaysWornColumns.WASWORN + " INTEGER NOT NULL,"
+                + DaysWornColumns.LEFT_PACKAGE_ID + " INTEGER,"
+                + DaysWornColumns.RIGHT_PACKAGE_ID + " INTEGER)");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -60,7 +60,7 @@
 
     <string name="privacy_policy_text">Privacy Policy here.</string>
 
-    <!-- NewLensFragment -->
+    <!-- EditLensFragment -->
     <string name="label_name">Name</string>
     <string name="label_brand">Brand</string>
 
@@ -70,6 +70,8 @@
         <item>Right</item>
         <item>Both</item>
     </string-array>
+
+    <string name="label_default">Default package for this eye</string>
 
     <string name="label_content">Number of lenses</string>
     <string name="label_remaining">Remaining lenses</string>
