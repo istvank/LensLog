@@ -71,10 +71,10 @@
         <item>Both</item>
     </string-array>
 
-    <string name="label_default">Default package for this eye</string>
+    <string name="label_default">Current package for this eye</string>
 
     <string name="label_content">Number of lenses</string>
-    <string name="label_remaining">Remaining lenses</string>
+    <string name="label_remaining">Sealed lenses</string>
     <string name="label_replacement_schedule">Replacement schedule</string>
 
     <string-array name="replacement_period_array">

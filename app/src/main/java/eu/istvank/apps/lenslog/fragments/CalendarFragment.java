@@ -1,8 +1,10 @@
 package eu.istvank.apps.lenslog.fragments;
 
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -32,6 +34,11 @@ import hirondelle.date4j.DateTime;
  *
  */
 public class CalendarFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>  {
+
+    /**
+     * The listener for package selection events.
+     */
+    private OnUpdateWornListener mListener;
 
     private CaldroidFragment mCaldroid;
 
@@ -99,9 +106,10 @@ public class CalendarFragment extends Fragment implements LoaderManager.LoaderCa
                         String[] selectionArgs = new String[] { String.valueOf(utcDateLong) };
                         if (color == R.color.CalendarBackgroundGreen) {
                             // now worn should be set to false
-                            ContentValues values = new ContentValues();
-                            values.put(LensLogContract.DaysWorn.WASWORN, false);
-                            getActivity().getContentResolver().update(LensLogContract.DaysWorn.CONTENT_URI, values, whereArg, selectionArgs);
+                            mListener.onUpdateWorn(utcDateLong, false);
+//                            ContentValues values = new ContentValues();
+//                            values.put(LensLogContract.DaysWorn.WASWORN, false);
+//                            getActivity().getContentResolver().update(LensLogContract.DaysWorn.CONTENT_URI, values, whereArg, selectionArgs);
                             view.setBackgroundResource(R.color.CalendarBackgroundRed);
                         } else {
                             // delete the entry
@@ -116,11 +124,12 @@ public class CalendarFragment extends Fragment implements LoaderManager.LoaderCa
                         }
                     } else {
                         // add date to database
-                        ContentValues values = new ContentValues();
-                        values.put(LensLogContract.DaysWorn.DATETIME, utcDateLong);
-                        values.put(LensLogContract.DaysWorn.WASWORN, true);
-                        // add date to database
-                        getActivity().getContentResolver().insert(LensLogContract.DaysWorn.CONTENT_URI, values);
+                        mListener.onUpdateWorn(utcDateLong, true);
+//                        ContentValues values = new ContentValues();
+//                        values.put(LensLogContract.DaysWorn.DATETIME, utcDateLong);
+//                        values.put(LensLogContract.DaysWorn.WASWORN, true);
+//                        // add date to database
+//                        getActivity().getContentResolver().insert(LensLogContract.DaysWorn.CONTENT_URI, values);
                         view.setBackgroundResource(R.color.CalendarBackgroundGreen);
                     }
                 }
@@ -137,6 +146,23 @@ public class CalendarFragment extends Fragment implements LoaderManager.LoaderCa
         return view;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnUpdateWornListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnUpdateWornListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
     private void updateCalendarBackgrounds(HashMap<DateTime, Integer> backgrounds) {
         mCalendarBackgrounds.putAll(backgrounds);
 
@@ -145,7 +171,17 @@ public class CalendarFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     /**
-     * Interfaces
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     */
+    public interface OnUpdateWornListener {
+        public void onUpdateWorn(long datetime, boolean worn);
+    }
+
+    /**
+     * Interface implementations
      */
 
     @Override

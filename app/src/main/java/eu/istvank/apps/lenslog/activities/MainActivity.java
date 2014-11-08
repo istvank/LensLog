@@ -53,7 +53,11 @@ import hirondelle.date4j.DateTime;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LensesFragment.OnPackageSelectedListener, FragmentManager.OnBackStackChangedListener {
+        implements
+        NavigationDrawerFragment.NavigationDrawerCallbacks,
+        LensesFragment.OnPackageSelectedListener,
+        FragmentManager.OnBackStackChangedListener,
+        CalendarFragment.OnUpdateWornListener {
 
     public static final String TAG = "MainActivity";
 
@@ -113,7 +117,7 @@ public class MainActivity extends ActionBarActivity
             long utcDateLong = utcDateTime.getMilliseconds(TimeZone.getTimeZone("UTC"));
             boolean isWorn = getIntent().getExtras().getBoolean(NotifySchedulingService.NOTIFICATION_WORN);
 
-            updateWorn(utcDateLong, isWorn);
+            onUpdateWorn(utcDateLong, isWorn);
 
             // cancel notification
             NotificationManager notificationManager = (NotificationManager)
@@ -211,7 +215,7 @@ public class MainActivity extends ActionBarActivity
             long utcDateLong = utcDateTime.getMilliseconds(TimeZone.getTimeZone("UTC"));
             boolean isWorn = intent.getExtras().getBoolean(NotifySchedulingService.NOTIFICATION_WORN);
 
-            updateWorn(utcDateLong, isWorn);
+            onUpdateWorn(utcDateLong, isWorn);
 
             // cancel notification
             NotificationManager notificationManager = (NotificationManager)
@@ -222,7 +226,48 @@ public class MainActivity extends ActionBarActivity
         super.onNewIntent(intent);
     }
 
-    private void updateWorn(long datetime, boolean worn) {
+    public void onUpdateWorn(long datetime, boolean worn) {
+        // get the default lenses
+        String[] projectionDefaults = new String[] {
+                LensLogContract.Packages._ID,
+                LensLogContract.Packages.EYE,
+                LensLogContract.Packages.CONTENT,
+                LensLogContract.Packages.REMAINING
+        };
+        String whereArgsDefaults = LensLogContract.Packages.DEFAULT_LENS + " = 1";
+        Cursor cursorDefaults = getContentResolver().query(LensLogContract.Packages.CONTENT_URI, projectionDefaults, whereArgsDefaults, null, null);
+        int defaultLensLeft = 0;
+        int defaultLensRight = 0;
+        while (cursorDefaults.moveToNext()) {
+            int defaultLens = cursorDefaults.getInt(cursorDefaults.getColumnIndexOrThrow(LensLogContract.Packages._ID));
+            String eye = cursorDefaults.getString(cursorDefaults.getColumnIndexOrThrow(LensLogContract.Packages.EYE));
+
+            int content = cursorDefaults.getInt(cursorDefaults.getColumnIndexOrThrow(LensLogContract.Packages.CONTENT));
+            int remaining = cursorDefaults.getInt(cursorDefaults.getColumnIndexOrThrow(LensLogContract.Packages.REMAINING));
+            // check if the number of remaining lenses equals the number of the content. If yes, then this
+            // package has only been opened recently.
+            if (content == remaining) {
+                // decrease remaining by two if eye is both, otherwise by one
+                if (eye.equals("both")) {
+                    remaining -= 2;
+                } else {
+                    remaining--;
+                }
+                ContentValues valuesRemaining = new ContentValues();
+                valuesRemaining.put(LensLogContract.Packages.REMAINING, remaining);
+                getContentResolver().update(LensLogContract.Packages.CONTENT_URI, valuesRemaining, LensLogContract.Packages._ID + " = " + defaultLens, null);
+            }
+
+            if (eye.equals("left")) {
+                defaultLensLeft = defaultLens;
+            } else if (eye.equals("right")) {
+                defaultLensRight = defaultLens;
+            } else if (eye.equals("both")) {
+                defaultLensLeft = defaultLens;
+                defaultLensRight = defaultLens;
+            }
+        }
+
         // check if today is already in database
         String[] projection = new String[] {
                 LensLogContract.DaysWorn._ID
@@ -232,6 +277,8 @@ public class MainActivity extends ActionBarActivity
         Cursor c = getContentResolver().query(LensLogContract.DaysWorn.CONTENT_URI, projection, whereArg, selectionArgs, null);
         ContentValues values = new ContentValues();
         values.put(LensLogContract.DaysWorn.WASWORN, worn);
+        values.put(LensLogContract.DaysWorn.LEFT_PACKAGE_ID, defaultLensLeft);
+        values.put(LensLogContract.DaysWorn.RIGHT_PACKAGE_ID, defaultLensRight);
         if (c != null && c.moveToFirst()) {
             // date exists so update
             getContentResolver().update(LensLogContract.DaysWorn.CONTENT_URI, values, whereArg, selectionArgs);

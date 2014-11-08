@@ -275,7 +275,7 @@ public class EditLensFragment extends Fragment implements LoaderManager.LoaderCa
         } else {
             // This is the place to set all defaults for new packages.
 
-            // set remaining lenses to 1 (which coincidentally has index 1)
+            // set remaining lenses to 1 (index 1)
             mSpnRemaining.setSelection(1);
             // set replacement period to monthly
             mSpnReplacementPeriod.setSelection(PERIOD_MONTHLY);
