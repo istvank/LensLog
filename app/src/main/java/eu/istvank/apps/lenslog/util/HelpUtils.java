@@ -21,9 +21,12 @@ package eu.istvank.apps.lenslog.util;
 import android.app.*;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.internal.widget.TintCheckBox;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -32,9 +35,13 @@ import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import eu.istvank.apps.lenslog.R;
+import eu.istvank.apps.lenslog.activities.MainActivity;
 
 /**
  * This is a set of helper methods for showing contextual help information in the app.
@@ -81,7 +88,7 @@ public class HelpUtils {
             privacyLink.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
-                    HelpUtils.showPrivacyPolicy(getActivity());
+                    HelpUtils.showPrivacyPolicy(getActivity(), false);
                 }
             }, 0, privacyLink.length(), 0);
             aboutBody.append("\n\n");
@@ -133,7 +140,7 @@ public class HelpUtils {
      * Privacy Policy
      */
 
-    public static void showPrivacyPolicy(Activity activity) {
+    public static void showPrivacyPolicy(Activity activity, boolean accept) {
         FragmentManager fm = activity.getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         Fragment prev = fm.findFragmentByTag("dialog_licenses");
@@ -142,8 +149,16 @@ public class HelpUtils {
         }
         ft.addToBackStack(null);
 
-        new PrivacyPolicyDialog().show(ft, "dialog_licenses");
+        if (accept) {
+            new PrivacyPolicyAcceptDialog().show(ft, "dialog_licenses");
+        } else {
+            new PrivacyPolicyDialog().show(ft, "dialog_licenses");
+        }
     }
+
+    /**
+     * Privacy Policy Dialog, shown from About
+     */
 
     public static class PrivacyPolicyDialog extends DialogFragment {
 
@@ -170,6 +185,53 @@ public class HelpUtils {
                             }
                     )
                     .create();
+        }
+    }
+
+    /**
+     * Privacy Policy Accept Dialog, shown on first start (until user accepts)
+     */
+
+    public static class PrivacyPolicyAcceptDialog extends DialogFragment {
+
+        private boolean mAccepted = false;
+
+        public PrivacyPolicyAcceptDialog() {
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.dialog_accept_license, null);
+
+            AlertDialog licenseDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.about_privacy_policy)
+                    .setPositiveButton(R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    if (mAccepted) {
+                                        dialog.dismiss();
+                                    } else {
+                                        getActivity().finish();
+                                    }
+                                    SharedPreferences sp = PreferenceManager
+                                            .getDefaultSharedPreferences(getActivity());
+                                    sp.edit().putBoolean(MainActivity.PREF_USER_ACCEPTED_PRIVACY_POLICY, mAccepted).apply();
+                                }
+                            }
+                    )
+                    .setView(layout)
+                    .create();
+
+            CheckBox chkAccept = (CheckBox) layout.findViewById(R.id.dialogaccept_chk_accept);
+            chkAccept.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    mAccepted = b;
+                }
+            });
+
+            return licenseDialog;
         }
     }
 

@@ -88,6 +88,8 @@ public class MainActivity extends ActionBarActivity
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
+    public static final String PREF_USER_ACCEPTED_PRIVACY_POLICY = "pref_privacy_policy_accepted";
+
     /**
      * Remember the position of the selected item.
      */
@@ -131,6 +133,13 @@ public class MainActivity extends ActionBarActivity
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // check if the user has already accepted the privacy policy
+        boolean privacyPolicyAccepted = sp.getBoolean(PREF_USER_ACCEPTED_PRIVACY_POLICY, false);
+        if (!privacyPolicyAccepted) {
+            HelpUtils.showPrivacyPolicy(this, true);
+        }
+
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
