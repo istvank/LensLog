@@ -57,7 +57,12 @@
     <!-- A single button shown on informative popups, like EULA, open source licenses and About -->
     <string name="ok">OK</string>
 
-    <string name="eula_legal_text">Your EULA text here.</string>
+    <string name="eula_legal_text"><![CDATA[
+    Lens Log © 2014 by istvank.eu<br />
+
+    The use of this app is regulated under the Privacy Policy available in the "About" menu.
+    The user acknowledges that the software may not be free from defects and may not satisfy all of the user\'s needs.
+    ]]></string>
 
     <string name="privacy_policy_text"><![CDATA[
     Lens Log is an app that enables its users to track their usage of contact lenses. Therefore, the app allows to enter and store personal medical data about the user\'s eye prescription. Besides, details about the used lens product and on which days they were used may be recorded in the app.
