@@ -129,6 +129,10 @@ public class HelpUtils {
         }
     }
 
+    /**
+     * Privacy Policy
+     */
+
     public static void showPrivacyPolicy(Activity activity) {
         FragmentManager fm = activity.getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -169,6 +173,10 @@ public class HelpUtils {
         }
     }
 
+    /**
+     * Open Source Licenses
+     */
+
     public static void showOpenSourceLicenses(Activity activity) {
         FragmentManager fm = activity.getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -204,6 +212,10 @@ public class HelpUtils {
                     .create();
         }
     }
+
+    /**
+     * End-User License Agreement
+     */
 
     public static void showEula(Activity activity) {
         FragmentManager fm = activity.getFragmentManager();
