@@ -58,7 +58,13 @@
 
     <string name="eula_legal_text">Your EULA text here.</string>
 
-    <string name="privacy_policy_text">Privacy Policy here.</string>
+    <string name="privacy_policy_text"><![CDATA[
+    Lens Log is an app that enables its users to track their usage of contact lenses. Therefore, the app allows to enter and store personal medical data about the user\'s eye prescription. Besides, details about the used lens product and on which days they were used may be recorded in the app.
+This is needed to fulfill the aims of the app, which is for the user to be able to get an overview about what lenses the user was using when.
+The data is stored in a database on the local device; the app itself does not upload any data to any cloud services.
+Lens Log does not sell, give or trade the statistics it stores to any 3rd party for data-mining or marketing purposes.
+All data that is collected within Lens Log can be deleted by the user by removing the app from the device.
+    ]]></string>
 
     <!-- EditLensFragment -->
     <string name="label_name">Name</string>
