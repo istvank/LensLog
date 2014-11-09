@@ -16,7 +16,7 @@
 -->
 <resources>
 
-    <string name="app_name">LensLog</string>
+    <string name="app_name">Lens Log</string>
     <string name="title_section_calendar">Calendar</string>
     <string name="title_section_lenses">Lenses</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -43,7 +43,7 @@
 
     <!-- About -->
     <string name="about_body"><![CDATA[
-        <b>LensLog</b><br>
+        <b>Lens Log</b><br>
         Version %s
     ]]></string>
     <!-- Shown as a link in the About screen of the app.-->
