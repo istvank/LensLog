@@ -113,6 +113,7 @@ public class MainActivity extends ActionBarActivity
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        // Handle the intent sent from the notification
         if (getIntent().hasExtra(NotifySchedulingService.NOTIFICATION_WORN)) {
             //TODO: save date in intent so that we can retrieve whether it still applies for the current date
             DateTime utcDateTime = DateTime.today(TimeZone.getTimeZone("UTC"));
@@ -200,6 +201,8 @@ public class MainActivity extends ActionBarActivity
             }
         });
 
+        mDrawerLayout.setStatusBarBackgroundColor(R.color.primaryColor);
+
         mTitle = getTitle();
     }
 
@@ -216,6 +219,7 @@ public class MainActivity extends ActionBarActivity
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    // Handle the intent sent from the notification. This is called if the app is already open.
     @Override
     protected void onNewIntent(Intent intent) {
         if (intent.hasExtra(NotifySchedulingService.NOTIFICATION_WORN)) {
